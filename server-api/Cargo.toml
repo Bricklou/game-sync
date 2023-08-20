@@ -1,0 +1,13 @@
+[workspace]
+members = ["projects/*"]
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+sea-orm = { version = "0", features = [
+    "sqlx-postgres",
+    "macros",
+    "runtime-actix-rustls",
+    "with-chrono",
+    "with-time",
+] }
+dotenvy = "0"
