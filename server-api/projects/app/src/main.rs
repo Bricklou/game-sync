@@ -2,7 +2,7 @@ mod app;
 
 mod controllers;
 mod core;
-mod models;
+mod entities;
 mod routes;
 
 #[actix_rt::main]
