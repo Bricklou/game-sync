@@ -12,6 +12,7 @@ actix-rt = "2"
 serde = { workspace = true }
 dotenvy = { workspace = true }
 config = "0"
+jsonwebtoken = "8"
 
 # Database
 sea-orm = { workspace = true }

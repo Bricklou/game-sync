@@ -4,6 +4,8 @@ use config::ConfigError;
 pub struct ServerConfig {
     pub host: String,
     pub port: u16,
+
+    pub secret_key: String,
 }
 
 #[derive(serde::Deserialize)]
