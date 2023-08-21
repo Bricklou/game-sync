@@ -22,11 +22,15 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(User::Password).string().not_null())
                     .col(
                         ColumnDef::new(User::CreatedAt)
-                            .date_time()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .default(Expr::current_timestamp()),
                     )
-                    .col(ColumnDef::new(User::UpdatedAt).date_time().not_null())
+                    .col(
+                        ColumnDef::new(User::UpdatedAt)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await

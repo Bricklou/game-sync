@@ -13,6 +13,8 @@ pub async fn run() -> Result<(), AppError> {
 
     let pool = database::init_pool(&config.database.url).await?;
 
+    database::seed_database(&pool).await?;
+
     println!(
         "Starting server at http://{}:{}",
         config.server.host, config.server.port
@@ -21,6 +23,7 @@ pub async fn run() -> Result<(), AppError> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(pool.clone()))
+            .app_data(Data::new(config.server.secret_key.clone()))
             .wrap(Logger::default())
             .wrap(Compress::default())
             .configure(setup::server_setup)

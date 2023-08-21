@@ -11,3 +11,11 @@ pub struct UserLoginRequest {
     #[validate(custom = "validate_required_str")]
     pub password: String,
 }
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct UserCreateInput {
+    #[validate(email)]
+    pub email: String,
+    #[validate(custom = "validate_required_str")]
+    pub password: String,
+}

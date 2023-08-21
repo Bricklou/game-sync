@@ -1,5 +1,8 @@
 use super::jwt_numeric_date;
-use crate::{core::errors::AppResult, entities::user::Model as UserModel};
+use crate::{
+    core::{config::SecretKey, errors::AppResult},
+    entities::user::Model as UserModel,
+};
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use time::{Duration, OffsetDateTime};
@@ -71,7 +74,9 @@ pub fn validate_token(token: &String, secret: &String) -> AppResult<Claims> {
 }
 
 #[tracing::instrument(name = "Generating tokens response", skip(user, secret))]
-pub fn generate_tokens_response(user: &UserModel, secret: &String) -> AppResult<TokenResponse> {
+pub fn generate_tokens_response(user: &UserModel, secret: &SecretKey) -> AppResult<TokenResponse> {
+    let SecretKey(secret) = secret;
+
     let access_token = generate_tokens(user, Duration::minutes(15), secret)?;
     let refresh_token = generate_tokens(user, Duration::days(7), secret)?;
 

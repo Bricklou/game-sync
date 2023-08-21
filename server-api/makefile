@@ -18,4 +18,4 @@ migrate-refresh:
 .PHONY: generate-entities
 generate-entities:
 	sea-orm-cli generate entity -o ./projects/app/src/entities \
-		--with-serde both --serde-skip-hidden-column --serde-skip-deserializing-primary-key
+		--with-serde both --serde-skip-hidden-column --serde-skip-deserializing-primary-key --date-time-crate time

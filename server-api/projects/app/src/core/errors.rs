@@ -5,7 +5,7 @@ pub type AppResult<T> = Result<T, AppError>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
-    #[error("Database Error")]
+    #[error("Database Error: {0}")]
     DatabaseError(#[from] sea_orm::DbErr),
     #[error("Not Found Error")]
     NotFoundError,
@@ -22,6 +22,9 @@ pub enum AppError {
     #[error("Argon2 Error: {0}")]
     Argon2Error(#[from] argon2::password_hash::Error),
 
+    #[error("Unauthorized")]
+    Unauthorized,
+
     #[error("Unknown Error")]
     UnknownError,
 }
@@ -35,6 +38,7 @@ impl ResponseError for AppError {
     fn status_code(&self) -> actix_web::http::StatusCode {
         match self {
             AppError::NotFoundError => actix_web::http::StatusCode::NOT_FOUND,
+            AppError::Unauthorized => actix_web::http::StatusCode::UNAUTHORIZED,
             _ => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
         }
     }

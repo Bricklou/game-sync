@@ -7,7 +7,6 @@ sea-orm = { version = "0", features = [
     "sqlx-postgres",
     "macros",
     "runtime-actix-rustls",
-    "with-chrono",
     "with-time",
 ] }
 dotenvy = "0"

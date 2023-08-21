@@ -1,11 +1,16 @@
 use config::ConfigError;
 
+#[derive(serde::Deserialize, Clone)]
+pub struct SecretKey(pub String);
+
 #[derive(serde::Deserialize)]
 pub struct ServerConfig {
+    #[serde(default = "default_host")]
     pub host: String,
+    #[serde(default = "default_port")]
     pub port: u16,
 
-    pub secret_key: String,
+    pub secret_key: SecretKey,
 }
 
 #[derive(serde::Deserialize)]
@@ -29,4 +34,12 @@ impl AppConfig {
         let cfg: AppConfig = cfg.try_deserialize()?;
         Ok(cfg)
     }
+}
+
+fn default_host() -> String {
+    "0.0.0.0".to_string()
+}
+
+fn default_port() -> u16 {
+    8431
 }

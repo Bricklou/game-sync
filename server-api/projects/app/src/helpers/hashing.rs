@@ -16,9 +16,16 @@ pub fn hash(password: &String) -> AppResult<String> {
 }
 
 #[tracing::instrument(name = "Verifying user password", skip(password, hash))]
-pub async fn verify_password(hash: &str, password: &[u8]) -> AppResult<()> {
+pub fn verify_password(hash: &str, password: &String) -> AppResult<bool> {
     let parsed_hash = PasswordHash::new(hash)?;
-    Argon2::default()
-        .verify_password(password, &parsed_hash)
-        .map_err(AppError::Argon2Error)
+    let res = Argon2::default().verify_password(password.as_bytes(), &parsed_hash);
+
+    // Is there an error ? If yes, is it a verification error ?
+    match res {
+        Ok(_) => Ok(true),
+        Err(e) => match e {
+            argon2::password_hash::Error::Password => Ok(false),
+            _ => Err(AppError::Argon2Error(e.into())),
+        },
+    }
 }
