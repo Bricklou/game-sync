@@ -16,6 +16,12 @@ pub enum AppError {
     #[error("Config error: {0}")]
     ConfigError(#[from] config::ConfigError),
 
+    #[error("JWT Error: {0}")]
+    JWTError(#[from] jsonwebtoken::errors::Error),
+
+    #[error("Argon2 Error: {0}")]
+    Argon2Error(#[from] argon2::password_hash::Error),
+
     #[error("Unknown Error")]
     UnknownError,
 }
