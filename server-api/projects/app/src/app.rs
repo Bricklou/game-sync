@@ -7,15 +7,19 @@ use actix_web::{
     web::Data,
     App, HttpServer,
 };
+use tracing::info;
 
 pub async fn run() -> Result<(), AppError> {
+    // Load configuration
     let config = AppConfig::from_env()?;
 
+    // Initialize database
     let pool = database::init_pool(&config.database.url).await?;
-
+    // Run database migrations
     database::seed_database(&pool).await?;
 
-    println!(
+    // Start server
+    info!(
         "Starting server at http://{}:{}",
         config.server.host, config.server.port
     );
