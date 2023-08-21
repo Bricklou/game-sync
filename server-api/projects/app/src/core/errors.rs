@@ -22,6 +22,9 @@ pub enum AppError {
     #[error("Argon2 Error: {0}")]
     Argon2Error(#[from] argon2::password_hash::Error),
 
+    #[error("Tera Error: {0}")]
+    TeraError(#[from] tera::Error),
+
     #[error("Internal Error")]
     InternalError,
 

@@ -8,6 +8,7 @@ edition = "2021"
 actix-web = "4"
 actix-rt = "2"
 actix-web-validator = "5"
+actix-web-lab = { version = "0", features = ["actix-files"] }
 
 # Data formating / manipulation
 serde = { workspace = true }
@@ -29,3 +30,6 @@ thiserror = "1"
 
 # Timing
 time = { version = "0", features = ["serde", "serde-well-known"] }
+
+# Templating
+tera = "1"

@@ -14,5 +14,5 @@ pub fn setup_routes(cfg: &mut web::ServiceConfig) {
                         .service(controllers::auth::logout),
                 ),
         )
-    );
+        .service(web::scope("admin").service(controllers::admin::index));
 }
