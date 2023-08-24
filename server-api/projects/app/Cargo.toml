@@ -8,7 +8,7 @@ edition = "2021"
 actix-web = "4"
 actix-rt = "2"
 actix-web-validator = "5"
-actix-web-lab = { version = "0", features = ["actix-files"] }
+actix-web-lab = { version = "0", features = ["spa"] }
 
 # Data formating / manipulation
 serde = { workspace = true }

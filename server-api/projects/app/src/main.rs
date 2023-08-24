@@ -4,6 +4,7 @@ mod controllers;
 mod core;
 mod entities;
 mod helpers;
+mod middlewares;
 mod models;
 mod repositories;
 mod routes;

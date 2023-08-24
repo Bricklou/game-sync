@@ -25,8 +25,9 @@ pub async fn login(
 }
 
 #[get("")]
-pub async fn me() -> impl Responder {
-    "Refresh"
+pub async fn me(secret_key: Data<SecretKey>, db: Data<DbPool>) -> impl Responder {
+    //let user = repositories::user::get_by_id(1).await.unwrap();
+    "Me"
 }
 
 #[delete("")]

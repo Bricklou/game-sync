@@ -1,6 +1,9 @@
 use super::jwt_numeric_date;
 use crate::{
-    core::{config::SecretKey, errors::AppResult},
+    core::{
+        config::SecretKey,
+        errors::{AppError, AppResult},
+    },
     entities::user::Model as UserModel,
 };
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation};
@@ -9,7 +12,7 @@ use time::{Duration, OffsetDateTime};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Claims {
-    sub: String,
+    pub sub: i32,
     #[serde(with = "jwt_numeric_date")]
     iat: OffsetDateTime,
     #[serde(with = "jwt_numeric_date")]
@@ -27,7 +30,7 @@ impl Claims {
     /// again, this function must be used for construction. `OffsetDateTime` contains a microsecond
     /// field but JWT timestamps are defined as UNIX timestamps (seconds). This function normalizes
     /// the timestamps.
-    pub fn new(sub: String, iat: OffsetDateTime, duration: Duration) -> Self {
+    pub fn new(sub: i32, iat: OffsetDateTime, duration: Duration) -> Self {
         // normalize the timestamps by stripping of microseconds
         let iat = iat
             .date()
@@ -46,9 +49,15 @@ impl Claims {
     }
 }
 
+impl Into<i32> for Claims {
+    fn into(self) -> i32 {
+        self.sub
+    }
+}
+
 #[tracing::instrument(name = "Generating tokens", skip(user, secret))]
 pub fn generate_tokens(user: &UserModel, duration: Duration, secret: &String) -> AppResult<String> {
-    let sub = user.id.to_string();
+    let sub = user.id;
     let iat = OffsetDateTime::now_utc();
 
     let claims = Claims::new(sub, iat, duration);
