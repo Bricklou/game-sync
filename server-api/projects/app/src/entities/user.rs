@@ -17,7 +17,9 @@ pub struct Model {
     #[sea_orm(column_name = "_password")]
     #[serde(skip)]
     pub password: String,
+    #[serde(with = "time::serde::rfc3339")]
     pub created_at: TimeDateTimeWithTimeZone,
+    #[serde(with = "time::serde::rfc3339")]
     pub updated_at: TimeDateTimeWithTimeZone,
 }
 

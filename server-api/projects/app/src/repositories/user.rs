@@ -1,3 +1,4 @@
+use actix_web::http::header::HeaderMap;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, EntityTrait, PaginatorTrait, QueryFilter, QuerySelect, Set,
 };
@@ -7,7 +8,7 @@ use crate::core::database::DbPool;
 use crate::core::errors::{AppError, AppResult};
 use crate::entities::user::Model as UserModel;
 use crate::entities::{prelude::*, user};
-use crate::helpers::{hashing, jwt};
+use crate::helpers::hashing;
 use crate::models::user::{UserCreateInput, UserLoginRequest};
 
 pub async fn get_users(db: &DbPool) -> AppResult<Vec<UserModel>> {
@@ -66,24 +67,16 @@ pub async fn login_from_token(
     token: &String,
     secret: &SecretKey,
 ) -> AppResult<UserModel> {
-    let user_id: i32 = jwt::validate_token(token, &secret.0)?.into();
-
-    let user = get_user_from_id(db, user_id).await?;
-
-    if let Some(user) = user {
-        return Ok(user);
-    }
+    // TODO: authenticate the user through the token (cookie or OAT !!!!)
 
     Err(AppError::Unauthorized)
 }
 
 pub async fn get_user_token_from_request(
+    headers: &HeaderMap,
     db: &DbPool,
-    req: &actix_web::dev::ServiceRequest,
     secret: &SecretKey,
 ) -> AppResult<UserModel> {
-    let headers = req.headers();
-
     if let Some(authorization_header) = headers.get("Authorization") {
         let authorization_header = authorization_header.to_str().unwrap();
         let authorization_header = authorization_header.split(" ").collect::<Vec<&str>>();

@@ -48,6 +48,7 @@ impl ResponseError for AppError {
             AppError::Unauthorized => actix_web::http::StatusCode::UNAUTHORIZED,
             AppError::JWTError(error) => match error.kind() {
                 JWTErrorKind::InvalidToken => actix_web::http::StatusCode::UNAUTHORIZED,
+                JWTErrorKind::ExpiredSignature => actix_web::http::StatusCode::UNAUTHORIZED,
                 JWTErrorKind::InvalidSignature => actix_web::http::StatusCode::UNAUTHORIZED,
                 _ => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
             },
