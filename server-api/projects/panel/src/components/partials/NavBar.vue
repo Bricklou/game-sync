@@ -5,8 +5,8 @@
         <div class="flex items-center">
           <router-link to="/">
             <span class="text-white">
-              Game-Sync
-              <span class="font-extrabold text-cyan-600">Admin</span>
+              <span class="font-extrabold">Game-Sync </span>
+              <span class="text-cyan-600">Admin</span>
             </span>
           </router-link>
 
