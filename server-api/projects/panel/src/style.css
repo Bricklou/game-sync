@@ -8,3 +8,7 @@ body,
 #app {
   @apply min-h-screen w-screen m-0 bg-gray-50;
 }
+
+*:focus-visible {
+  @apply outline outline-2 outline-cyan-600 outline-offset-2;
+}
