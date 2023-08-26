@@ -1,6 +1,7 @@
 [workspace]
 members = ["projects/*"]
 exclude = ["projects/panel"]
+resolver = "2"
 
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }

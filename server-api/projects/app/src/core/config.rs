@@ -3,7 +3,7 @@ use config::ConfigError;
 #[derive(serde::Deserialize, Clone)]
 pub struct SecretKey(pub String);
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct ServerConfig {
     #[serde(default = "default_host")]
     pub host: String,
@@ -13,15 +13,24 @@ pub struct ServerConfig {
     pub secret_key: SecretKey,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct DatabaseConfig {
     pub url: String,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
+pub struct RedisConfig {
+    pub url: String,
+}
+
+#[derive(serde::Deserialize, Clone)]
 pub struct AppConfig {
     pub server: ServerConfig,
     pub database: DatabaseConfig,
+    pub redis: RedisConfig,
+
+    #[serde(default = "default_enable_registration")]
+    pub enable_registration: bool,
 }
 
 impl AppConfig {
@@ -42,4 +51,8 @@ fn default_host() -> String {
 
 fn default_port() -> u16 {
     8431
+}
+
+fn default_enable_registration() -> bool {
+    false
 }

@@ -3,29 +3,28 @@ use std::{
     pin::Pin,
     rc::Rc,
 };
+use actix_session::SessionExt;
+use actix_web::{dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform}, web, HttpMessage};
 
-use actix_web::{
-    dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
-    web, HttpMessage,
-};
 
 use crate::{
-    core::{config::SecretKey, database::DbPool},
+    core::{database::DbPool},
     repositories,
 };
+use crate::core::errors::AppError;
 
 pub struct Auth;
 
 impl<S: 'static, B> Transform<S, ServiceRequest> for Auth
-where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = actix_web::Error>,
-    S::Future: 'static,
-    B: 'static,
+    where
+        S: Service<ServiceRequest, Response=ServiceResponse<B>, Error=actix_web::Error>,
+        S::Future: 'static,
+        B: 'static,
 {
     type Response = ServiceResponse<B>;
     type Error = actix_web::Error;
-    type InitError = ();
     type Transform = AuthMiddleware<S>;
+    type InitError = ();
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
@@ -40,33 +39,37 @@ pub struct AuthMiddleware<S> {
 }
 
 impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
-where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = actix_web::Error> + 'static,
-    S::Future: 'static,
-    B: 'static,
+    where
+        S: Service<ServiceRequest, Response=ServiceResponse<B>, Error=actix_web::Error> + 'static,
+        S::Future: 'static,
+        B: 'static,
 {
     type Response = ServiceResponse<B>;
     type Error = actix_web::Error;
-    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>>>>;
+    type Future = Pin<Box<dyn Future<Output=Result<Self::Response, Self::Error>>>>;
 
     forward_ready!(service);
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
         let svc = self.service.clone();
+        let session = req.get_session();
 
         Box::pin(async move {
-            // Unwrap because we know that we have the data, otherwise that something is wrong
-            let db = req.app_data::<web::Data<DbPool>>().unwrap();
-            let secret_key = req.app_data::<web::Data<SecretKey>>().unwrap();
-            let headers = req.headers();
+            let user_id = session.get::<i32>("user_id")?;
 
-            let user =
-                repositories::user::get_user_token_from_request(headers, db, secret_key).await?;
+            match user_id {
+                None => Err(AppError::Unauthorized.into()),
+                Some(user_id) => {
+                    // Unwrap because we know that we have the data, otherwise that something is wrong
+                    let db = req.app_data::<web::Data<DbPool>>().unwrap();
+                    let user = repositories::user::get_user_from_id(&db, user_id).await?.unwrap();
 
-            req.extensions_mut().insert(user);
+                    // add the user to the request extensions
+                    req.extensions_mut().insert(user);
 
-            let res = svc.call(req).await?;
-            Ok(res)
+                    Ok(svc.call(req).await?)
+                }
+            }
         })
     }
 }

@@ -1,6 +1,9 @@
 [server]
 
-secret_key = "super_secret_key"
+secret_key = "__my__super__long__secret__key__1234__"
 
 [database]
 url = "postgres://postgres:postgres@localhost:5432/postgres"
+
+[redis]
+url = "redis://localhost:6379"

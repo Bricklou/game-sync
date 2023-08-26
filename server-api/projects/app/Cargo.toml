@@ -7,6 +7,7 @@ edition = "2021"
 # Web framework
 actix-web = "4"
 actix-rt = "2"
+actix-session = { version = "0", features = ["redis-rs-session"] }
 actix-web-validator = "5"
 actix-web-lab = { version = "0", features = ["spa"] }
 
@@ -14,9 +15,10 @@ actix-web-lab = { version = "0", features = ["spa"] }
 serde = { workspace = true }
 dotenvy = { workspace = true }
 config = "0"
-jsonwebtoken = "8"
 validator = { version = "0.16", features = ["derive"] }
 argon2 = { version = "0", "features" = ["std"] }
+rand = { version = "0", features = ["std"] }
+hex = "0"
 
 # Database
 sea-orm = { workspace = true }
@@ -27,6 +29,7 @@ tracing-subscriber = "0"
 
 # Error handling
 thiserror = "1"
+anyhow = "1"
 
 # Timing
 time = { version = "0", features = ["serde", "serde-well-known"] }

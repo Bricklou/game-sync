@@ -1,5 +1,4 @@
 use actix_web::{error::ResponseError, HttpResponse};
-use jsonwebtoken::errors::ErrorKind as JWTErrorKind;
 use serde::Serialize;
 
 pub type AppResult<T> = Result<T, AppError>;
@@ -8,17 +7,18 @@ pub type AppResult<T> = Result<T, AppError>;
 pub enum AppError {
     #[error("Database Error: {0}")]
     DatabaseError(#[from] sea_orm::DbErr),
+
     #[error("Not Found Error")]
     NotFoundError,
+
+    #[error("Failed to parse IP Address: {0}")]
+    IpAddrError(#[from] std::net::AddrParseError),
 
     #[error("IO Error: {0}")]
     IOError(#[from] std::io::Error),
 
     #[error("Config error: {0}")]
     ConfigError(#[from] config::ConfigError),
-
-    #[error("JWT Error: {0}")]
-    JWTError(#[from] jsonwebtoken::errors::Error),
 
     #[error("Argon2 Error: {0}")]
     Argon2Error(#[from] argon2::password_hash::Error),
@@ -29,11 +29,20 @@ pub enum AppError {
     #[error("Internal Error")]
     InternalError,
 
+    #[error("Get Session error: {0:?}")]
+    SessionGetError(#[from] actix_session::SessionGetError),
+
+    #[error("Set Session error: {0:?}")]
+    SessionSetError(#[from] actix_session::SessionInsertError),
+
     #[error("Unauthorized")]
     Unauthorized,
 
     #[error("Unknown Error")]
     UnknownError,
+
+    #[error(transparent)]
+    Other(#[from] anyhow::Error),
 }
 
 #[derive(Serialize)]
@@ -46,12 +55,6 @@ impl ResponseError for AppError {
         match self {
             AppError::NotFoundError => actix_web::http::StatusCode::NOT_FOUND,
             AppError::Unauthorized => actix_web::http::StatusCode::UNAUTHORIZED,
-            AppError::JWTError(error) => match error.kind() {
-                JWTErrorKind::InvalidToken => actix_web::http::StatusCode::UNAUTHORIZED,
-                JWTErrorKind::ExpiredSignature => actix_web::http::StatusCode::UNAUTHORIZED,
-                JWTErrorKind::InvalidSignature => actix_web::http::StatusCode::UNAUTHORIZED,
-                _ => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
-            },
             _ => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
         }
     }

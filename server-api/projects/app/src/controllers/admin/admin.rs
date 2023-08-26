@@ -6,6 +6,6 @@ use crate::core::errors::AppResult;
 
 #[get("")]
 pub async fn index(tmpl: web::Data<Tera>) -> AppResult<Html> {
-    let s = tmpl.render("index.html", &tera::Context::new())?;
+    let s = tmpl.render("api.html", &tera::Context::new())?;
     Ok(Html(s))
 }
