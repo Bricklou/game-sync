@@ -1,13 +1,11 @@
 use actix_web::web::{Data, ServiceConfig};
-use tera::Tera;
 
-use crate::routes;
+use crate::{data::AppData, routes};
 
-pub fn server_setup(cfg: &mut ServiceConfig) {
+pub fn server_setup(cfg: &mut ServiceConfig, app_data: AppData) {
     // Register routes
-    routes::setup_routes(cfg);
+    cfg.configure(|cfg| routes::setup_routes(cfg, &app_data));
 
-    // Register template engine (Tera)
-    let tera = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*")).unwrap();
-    cfg.app_data(Data::new(tera));
+    // Register data
+    cfg.app_data(Data::new(app_data.clone()));
 }

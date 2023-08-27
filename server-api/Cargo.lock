@@ -1501,6 +1501,7 @@ version = "0.1.0"
 dependencies = [
  "actix-rt",
  "actix-session",
+ "actix-utils",
  "actix-web",
  "actix-web-lab",
  "actix-web-validator",

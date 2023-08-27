@@ -1,12 +1,12 @@
+use crate::{controllers, data::AppData};
 use actix_web::web;
-use crate::controllers;
 
 mod admin;
 mod api;
 
-pub fn setup_routes(cfg: &mut web::ServiceConfig) {
+pub fn setup_routes(cfg: &mut web::ServiceConfig, app_data: &AppData) {
     cfg.service(controllers::base::status);
 
-    cfg.service(api::register_route())
-        .service(admin::register_route());
+    cfg.configure(|cfg| api::register_route(cfg, app_data));
+    cfg.configure(|cfg| admin::register_route(cfg, app_data));
 }

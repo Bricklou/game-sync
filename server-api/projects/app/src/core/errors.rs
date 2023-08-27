@@ -35,6 +35,12 @@ pub enum AppError {
     #[error("Set Session error: {0:?}")]
     SessionSetError(#[from] actix_session::SessionInsertError),
 
+    #[error("Save session error: {0:?}")]
+    SessionSaveError(#[from] actix_session::storage::SaveError),
+
+    #[error("Load session error: {0:?}")]
+    SessionLoadError(#[from] actix_session::storage::LoadError),
+
     #[error("Unauthorized")]
     Unauthorized,
 

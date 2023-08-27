@@ -12,9 +12,9 @@ use std::{
 use crate::core::errors::AppError;
 use crate::{core::database::DbPool, repositories};
 
-pub struct Auth;
+pub struct Guest;
 
-impl<S: 'static, B> Transform<S, ServiceRequest> for Auth
+impl<S: 'static, B> Transform<S, ServiceRequest> for Guest
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = actix_web::Error>,
     S::Future: 'static,
@@ -22,22 +22,22 @@ where
 {
     type Response = ServiceResponse<B>;
     type Error = actix_web::Error;
-    type Transform = AuthMiddleware<S>;
+    type Transform = GuestMiddleware<S>;
     type InitError = ();
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ready(Ok(AuthMiddleware {
+        ready(Ok(GuestMiddleware {
             service: Rc::new(service),
         }))
     }
 }
 
-pub struct AuthMiddleware<S> {
+pub struct GuestMiddleware<S> {
     service: Rc<S>,
 }
 
-impl<S, B> Service<ServiceRequest> for AuthMiddleware<S>
+impl<S, B> Service<ServiceRequest> for GuestMiddleware<S>
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = actix_web::Error> + 'static,
     S::Future: 'static,
@@ -57,20 +57,18 @@ where
             let user_id = session.get::<i32>("user_id")?;
 
             match user_id {
-                None => Err(AppError::Unauthorized.into()),
-                Some(user_id) => {
+                Some(_) => {
                     // Unwrap because we know that we have the data, otherwise that something is wrong
                     let db = req.app_data::<web::Data<DbPool>>().unwrap();
-                    let user = repositories::user::get_user_from_id(&db, user_id).await?;
+                    let user = repositories::user::get_user_from_id(&db, user_id.unwrap()).await?;
 
-                    if let Some(user) = user {
-                        // add the user to the request extensions
-                        req.extensions_mut().insert(user);
-                        return Ok(svc.call(req).await?);
+                    if user.is_some() {
+                        return Err(AppError::Unauthorized.into());
                     }
 
-                    Err(AppError::Unauthorized.into())
+                    Ok(svc.call(req).await?)
                 }
+                None => Ok(svc.call(req).await?),
             }
         })
     }

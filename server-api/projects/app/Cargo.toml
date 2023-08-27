@@ -10,6 +10,7 @@ actix-rt = "2"
 actix-session = { version = "0", features = ["redis-rs-session"] }
 actix-web-validator = "5"
 actix-web-lab = { version = "0", features = ["spa"] }
+actix-utils = "3"
 
 # Data formating / manipulation
 serde = { workspace = true }
