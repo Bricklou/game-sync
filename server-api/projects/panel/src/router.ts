@@ -1,3 +1,4 @@
+import { useProgressStore } from "./store/modules/progress";
 import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/store/modules/auth.ts";
 import { useAppStore } from "./store/modules/app";
@@ -40,6 +41,20 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach(async (to, _from, next) => {
+  const progress = useProgressStore();
+  if (to.name) {
+    progress.show();
+  }
+  next();
+});
+
+router.beforeResolve(async (_to, _from, next) => {
+  const progress = useProgressStore();
+  progress.hide();
+  next();
 });
 
 router.beforeEach(async (to) => {

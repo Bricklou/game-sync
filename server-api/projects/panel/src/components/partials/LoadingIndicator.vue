@@ -1,10 +1,11 @@
 <template>
-  <FullScreenPage>
+  <FullScreenPage class="text-center">
     <div class="mx-auto">
-      <div class=""></div>
-      <span class="text-lg">Loading...</span>
+      <span class="text-3xl animate-pulse">Loading...</span>
     </div>
   </FullScreenPage>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import FullScreenPage from "./FullScreenPage.vue";
+</script>

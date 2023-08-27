@@ -1,4 +1,5 @@
 <template>
+  <ProgressBar />
   <div v-if="!appStore.loading" class="flex flex-col">
     <NavBar v-if="!route.meta.hideNavbar" />
 
@@ -16,6 +17,7 @@ import NavBar from "./components/partials/NavBar.vue";
 import { useAppStore } from "./store/modules/app";
 import LoadingIndicator from "./components/partials/LoadingIndicator.vue";
 import router from "./router";
+import ProgressBar from "./components/partials/ProgressBar.vue";
 
 const appStore = useAppStore();
 const route = useRoute();

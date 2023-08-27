@@ -44,6 +44,11 @@ export const useAuthStore = defineStore("authUser", () => {
     return user.value;
   };
 
+  const register = async (email: string, password: string) => {
+    // update pinia state
+    user.value = await authApi.register(email, password);
+  };
+
   const setReturnUrl = (url: string) => {
     returnUrl.value = url;
   };
@@ -57,5 +62,6 @@ export const useAuthStore = defineStore("authUser", () => {
     logout,
     fetchUser,
     getUser,
+    register,
   };
 });
