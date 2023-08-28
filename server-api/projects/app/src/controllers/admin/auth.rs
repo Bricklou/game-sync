@@ -65,7 +65,7 @@ pub async fn me(session: Session, app_data: web::Data<AppData>) -> AppResult<imp
 
 #[tracing::instrument("DELETE /admin/auth", skip(session))]
 pub async fn logout(session: Session) -> AppResult<impl Responder> {
-    session.remove("user_id");
+    session.purge();
 
     Ok(HttpResponse::Ok().finish())
 }
