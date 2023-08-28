@@ -65,3 +65,10 @@ pub async fn me(session: Session, app_data: web::Data<AppData>) -> AppResult<imp
         None => Err(AppError::Unauthorized),
     }
 }
+
+#[tracing::instrument("DELETE /admin/auth", skip(session))]
+pub async fn logout(session: Session) -> AppResult<impl Responder> {
+    session.remove("user_id");
+
+    Ok(HttpResponse::Ok().finish())
+}

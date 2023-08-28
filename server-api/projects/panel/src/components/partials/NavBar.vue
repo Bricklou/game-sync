@@ -15,7 +15,7 @@
             <div class="flex items-baseline ml-10 space-x-4">
               <router-link
                 to="/"
-                class="px-3 py-2 text-sm font-medium text-white rounded-md hover:bg-gray-700"
+                class="px-3 py-2 text-sm font-medium text-white rounded-md hover:bg-gray-800"
               >
                 Dashboard
               </router-link>
@@ -26,15 +26,35 @@
         <!-- Desktop menu section (right) -->
         <div class="items-center hidden md:flex">
           <div class="flex items-baseline ml-10 space-x-4">
-            <span
-              v-if="auth.user"
-              class="px-3 py-2 text-sm font-medium text-white"
-            >
-              <User
-                class="inline-block mr-1 w-8 h-8 rounded-full bg-gray-600 p-1"
-              />
-              {{ auth.user.email }}
-            </span>
+            <div v-if="auth.user" class="text-white relative group">
+              <label
+                tabindex="0"
+                class="px-3 py-4 text-sm font-medium hover:bg-gray-800 rounded-md select-none group-focus-within:bg-gray-800 group-focus-within:rounded-b-none"
+              >
+                <User
+                  class="inline-block mr-1 w-8 h-8 rounded-full bg-gray-600 p-1"
+                />
+                {{ auth.user.email }}
+              </label>
+              <ul
+                :class="[
+                  'absolute invisible flex flex-col flex-wrap p-2 rounded-b-md bg-gray-800 z-[1] w-full top-9 gap-y-1 transform-gpu transition-transform duration-200',
+                  'origin-top scale-y-0 group-focus-within:visible group-focus-within:scale-y-100',
+                ]"
+              >
+                <li class="hover:bg-gray-700 rounded-md px-2 py-1">Item</li>
+                <li class="hover:bg-gray-700 rounded-md px-2 py-1">Item</li>
+                <li class="hover:bg-gray-700 rounded-md px-3 py-2">
+                  <button
+                    class="appearance-none grid grid-flow-col content-start items-center gap-2 select-none text-sm"
+                    @click="auth.logout()"
+                  >
+                    <LogOut class="inline-block w-4 h-4" />
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -58,6 +78,7 @@
 import { useAuthStore } from "@/store/modules/auth";
 import { RouterLink } from "vue-router";
 import { User } from "lucide-vue-next";
+import { LogOut } from "lucide-vue-next";
 
 const auth = useAuthStore();
 </script>

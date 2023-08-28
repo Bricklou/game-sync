@@ -26,6 +26,7 @@ pub fn register_route(cfg: &mut ServiceConfig, app_data: &AppData) {
                 .service(
                     web::resource("")
                         .route(web::get().to(admin_ctrl::auth::me).wrap(Auth))
+                        .route(web::delete().to(admin_ctrl::auth::logout).wrap(Auth))
                         .route(web::post().to(admin_ctrl::auth::login).wrap(Guest)),
                 )
                 .route(
