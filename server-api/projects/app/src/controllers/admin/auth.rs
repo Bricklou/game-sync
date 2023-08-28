@@ -1,6 +1,5 @@
 use actix_session::Session;
 use actix_web::{
-    get, post,
     web::{self, Data},
     HttpResponse, Responder,
 };
@@ -11,10 +10,7 @@ use crate::{
         types::ValidatedJson,
     },
     data::AppData,
-    models::{
-        admin::{LoginRequest, RegisterResponse},
-        user::UserCreateInput,
-    },
+    models::user::{UserCreateInput, UserLoginRequest},
     repositories,
 };
 
@@ -23,26 +19,27 @@ pub async fn register(
     app_data: Data<AppData>,
     session: Session,
 ) -> AppResult<impl Responder> {
-    // Check if the user already exists
-
-    // If yes, return an error
-    let exists = repositories::user::get_user_from_email(&app_data.db, &form_data.email).await?;
-    if exists.is_some() {
-        return Err(AppError::AlreadyExists("User already exists".to_string()));
-    }
-
-    // If not, create the user
     let user = repositories::user::create_user(&app_data.db, &form_data).await?;
 
     // Create a session for the user
     session.insert("user_id", user.id)?;
 
     // Return the user
-    Ok(HttpResponse::Ok().json(RegisterResponse { user }))
+    Ok(HttpResponse::Ok().json(user))
 }
 
-pub async fn login(data: ValidatedJson<LoginRequest>) -> AppResult<impl Responder> {
-    Ok("login")
+pub async fn login(
+    form_data: ValidatedJson<UserLoginRequest>,
+    app_data: web::Data<AppData>,
+    session: Session,
+) -> AppResult<impl Responder> {
+    let user = repositories::user::login(&app_data.db, &form_data).await?;
+
+    // Create a session for the user
+    session.insert("user_id", user.id)?;
+
+    // Return the user
+    Ok(HttpResponse::Ok().json(user))
 }
 
 #[tracing::instrument("GET /admin/auth/me", skip(session, app_data))]

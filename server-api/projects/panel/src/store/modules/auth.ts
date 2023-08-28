@@ -27,14 +27,14 @@ export const useAuthStore = defineStore("authUser", () => {
   const logout = async () => {
     try {
       await authApi.logout();
+
+      // update pinia state
+      user.value = null;
+
+      await router.push("/login");
     } catch (e) {
       console.error(e);
     }
-
-    // update pinia state
-    user.value = null;
-
-    await router.push("/login");
   };
 
   const fetchUser = async () => {

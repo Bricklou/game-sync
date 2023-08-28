@@ -63,6 +63,12 @@ pub async fn login(db: &DbPool, login_input: &UserLoginRequest) -> AppResult<Use
 
 #[tracing::instrument("Create user", skip(user, db))]
 pub async fn create_user(db: &DbPool, user: &UserCreateInput) -> AppResult<UserModel> {
+    let exists = get_user_from_email(db, &user.email).await?;
+
+    if exists.is_some() {
+        return Err(AppError::AlreadyExists("User already exists".to_string()));
+    }
+
     let user = user::ActiveModel {
         email: Set(user.email.clone()),
         password: Set(user.password.clone()),

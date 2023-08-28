@@ -2,7 +2,7 @@ import api from "@/api/init";
 import { IUser } from "@/types/user.interface";
 
 export async function login(email: string, password: string): Promise<IUser> {
-  const response = await api.post<IUser>("/admin/auth", {
+  const response = await api.post<{ user: IUser }>("/admin/auth", {
     email,
     password,
   });
