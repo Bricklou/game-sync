@@ -1,5 +1,6 @@
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, PaginatorTrait, QueryFilter, Set};
 
+use crate::entities::{prelude::*, user};
 use crate::{
     core::{
         database::DbPool,
@@ -9,7 +10,6 @@ use crate::{
     helpers::hashing,
     models::user::{UserCreateInput, UserLoginRequest},
 };
-use crate::entities::{prelude::*, user};
 
 pub async fn get_users(db: &DbPool) -> AppResult<Vec<UserModel>> {
     let users = User::find()
@@ -48,7 +48,7 @@ pub async fn get_user_from_email(db: &DbPool, email: &String) -> AppResult<Optio
     Ok(user)
 }
 
-#[tracing::instrument(name = "Login user", skip(login_input, db))]
+#[tracing::instrument("Login user", skip(login_input, db))]
 pub async fn login(db: &DbPool, login_input: &UserLoginRequest) -> AppResult<UserModel> {
     let user = get_user_from_email(db, &login_input.email).await?;
 
@@ -61,7 +61,7 @@ pub async fn login(db: &DbPool, login_input: &UserLoginRequest) -> AppResult<Use
     Err(AppError::Unauthorized)
 }
 
-#[tracing::instrument(name = "Create user", skip(user, db))]
+#[tracing::instrument("Create user", skip(user, db))]
 pub async fn create_user(db: &DbPool, user: &UserCreateInput) -> AppResult<UserModel> {
     let user = user::ActiveModel {
         email: Set(user.email.clone()),

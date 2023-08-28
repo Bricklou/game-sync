@@ -4,9 +4,12 @@
 @import "tailwindcss/variants";
 
 html,
-body,
+body {
+  @apply text-gray-900 antialiased bg-gray-50 m-0;
+}
+
 #app {
-  @apply min-h-screen w-screen m-0 bg-gray-50;
+  @apply min-h-screen;
 }
 
 *:focus-visible {

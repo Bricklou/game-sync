@@ -1,3 +1,2 @@
-mod admin;
-
-pub use admin::*;
+pub mod admin;
+pub mod auth;

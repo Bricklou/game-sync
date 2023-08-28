@@ -2,7 +2,7 @@ import api from "@/api/init";
 import { IUser } from "@/types/user.interface";
 
 export async function login(email: string, password: string): Promise<IUser> {
-  const response = await api.post<IUser>("/auth/login", {
+  const response = await api.post<IUser>("/admin/auth", {
     email,
     password,
   });
@@ -11,11 +11,11 @@ export async function login(email: string, password: string): Promise<IUser> {
 }
 
 export async function logout(): Promise<void> {
-  await api.post("/auth/logout");
+  await api.delete("/admin/auth");
 }
 
 export async function me(): Promise<IUser> {
-  const response = await api.get<IUser>("/auth/me");
+  const response = await api.get<IUser>("/admin/auth");
 
   return response.data;
 }
@@ -24,10 +24,18 @@ export async function register(
   email: string,
   password: string,
 ): Promise<IUser> {
-  const response = await api.post<IUser>("/auth/register", {
-    email,
-    password,
-  });
+  const response = await api.post<IUser>(
+    "/admin/auth/register",
+    {
+      email,
+      password,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
 
   return response.data;
 }

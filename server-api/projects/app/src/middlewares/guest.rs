@@ -9,7 +9,7 @@ use std::{
     rc::Rc,
 };
 
-use crate::core::errors::AppError;
+use crate::{app, core::errors::AppError, data::AppData};
 use crate::{core::database::DbPool, repositories};
 
 pub struct Guest;
@@ -57,10 +57,10 @@ where
             let user_id = session.get::<i32>("user_id")?;
 
             match user_id {
-                Some(_) => {
+                Some(user_id) => {
                     // Unwrap because we know that we have the data, otherwise that something is wrong
-                    let db = req.app_data::<web::Data<DbPool>>().unwrap();
-                    let user = repositories::user::get_user_from_id(&db, user_id.unwrap()).await?;
+                    let app_data = req.app_data::<web::Data<AppData>>().unwrap();
+                    let user = repositories::user::get_user_from_id(&app_data.db, user_id).await?;
 
                     if user.is_some() {
                         return Err(AppError::Unauthorized.into());

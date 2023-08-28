@@ -1,8 +1,8 @@
 <template>
   <div
-    class="min-h-screen w-screen fixed top-0 left-0 flex flex-col content-center justify-center bg-gray-900 text-white"
+    class="relative min-h-screen flex flex-col content-center justify-center bg-gray-900 text-white"
   >
-    <div class="z-10 mx-2">
+    <div class="z-10 px-2">
       <slot />
     </div>
 
@@ -14,7 +14,7 @@
 
 <style scoped>
 .bg-animation {
-  @apply absolute top-0 left-0 w-screen h-screen overflow-hidden;
+  @apply absolute top-0 left-0 w-full h-full overflow-hidden;
 
   li {
     @apply absolute block w-5 h-5 bg-cyan-600 bg-opacity-50 -top-[150px];

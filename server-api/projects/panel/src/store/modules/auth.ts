@@ -34,7 +34,11 @@ export const useAuthStore = defineStore("authUser", () => {
 
   const fetchUser = async () => {
     // update pinia state
-    user.value = await authApi.me();
+    try {
+      user.value = await authApi.me();
+    } catch (e) {
+      user.value = null;
+    }
   };
 
   const getUser = async () => {

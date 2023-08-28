@@ -1,9 +1,10 @@
 use crate::data::AppData;
+use crate::middlewares::auth::Auth;
+use crate::{controllers::admin as admin_ctrl, middlewares::guest::Guest};
 use actix_session::{config::PersistentSession, SessionMiddleware};
 use actix_web::{
     cookie::Key,
     web::{self, ServiceConfig},
-    HttpResponse,
 };
 use time::Duration;
 
@@ -19,7 +20,19 @@ pub fn register_route(cfg: &mut ServiceConfig, app_data: &AppData) {
         .build();
 
     let scope = web::scope("admin")
-        .route("/", web::get().to(|| HttpResponse::Ok()))
+        .service(admin_ctrl::admin::index)
+        .service(
+            web::scope("auth")
+                .service(
+                    web::resource("")
+                        .route(web::get().to(admin_ctrl::auth::me).wrap(Auth))
+                        .route(web::post().to(admin_ctrl::auth::login).wrap(Guest)),
+                )
+                .route(
+                    "register",
+                    web::route().to(admin_ctrl::auth::register).wrap(Guest),
+                ),
+        )
         .wrap(session_middleware);
 
     cfg.service(scope);

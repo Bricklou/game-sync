@@ -1,10 +1,13 @@
 <template>
   <button
     :class="[
-      'px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-md motion-safe:transition-all duration-100 text-white',
+      'px-4 py-2 bg-cyan-600 hover:enabled:bg-cyan-700 rounded-md motion-safe:transition-all duration-100 text-white',
       'outline-cyan-600 outline-offset-2 outline-2 focus:outline',
+
+      'disabled:opacity-50 disabled:cursor-not-allowed',
     ]"
     :type="$props.type"
+    :disabled="$props.disabled || $props.loading"
   >
     <Loader2 v-if="$props.loading" class="mr-2 inline-block animate-spin" />
 
@@ -25,6 +28,7 @@ interface ButtonProps {
   type: "button" | "submit" | "reset";
   icon?: Icon;
   loading?: boolean;
+  disabled?: boolean;
 }
 
 // Input type
@@ -32,11 +36,12 @@ withDefaults(defineProps<ButtonProps>(), {
   type: "button",
   loading: false,
   icon: undefined,
+  disabled: false,
 });
 </script>
 
 <style scoped>
-button {
+button:not([disabled]) {
   &:active:hover,
   &:active:focus {
     animation: button-pop 0s ease-out;

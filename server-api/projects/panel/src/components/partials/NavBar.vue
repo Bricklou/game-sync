@@ -2,6 +2,7 @@
   <nav class="bg-gray-900">
     <div class="px-8 mx-auto max-w-7xl">
       <div class="flex items-center justify-between h-16">
+        <!-- Desktop menu section (left) -->
         <div class="flex items-center">
           <router-link to="/">
             <span class="text-white">
@@ -19,6 +20,21 @@
                 Dashboard
               </router-link>
             </div>
+          </div>
+        </div>
+
+        <!-- Desktop menu section (right) -->
+        <div class="items-center hidden md:flex">
+          <div class="flex items-baseline ml-10 space-x-4">
+            <span
+              v-if="auth.user"
+              class="px-3 py-2 text-sm font-medium text-white"
+            >
+              <User
+                class="inline-block mr-1 w-8 h-8 rounded-full bg-gray-600 p-1"
+              />
+              {{ auth.user.email }}
+            </span>
           </div>
         </div>
       </div>
@@ -39,5 +55,9 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from "@/store/modules/auth";
 import { RouterLink } from "vue-router";
+import { User } from "lucide-vue-next";
+
+const auth = useAuthStore();
 </script>

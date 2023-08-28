@@ -11,6 +11,7 @@ actix-session = { version = "0", features = ["redis-rs-session"] }
 actix-web-validator = "5"
 actix-web-lab = { version = "0", features = ["spa"] }
 actix-utils = "3"
+actix-web-grants = "3"
 
 # Data formating / manipulation
 serde = { workspace = true }
@@ -25,7 +26,10 @@ hex = "0"
 sea-orm = { workspace = true }
 
 # Logging
-tracing = "0"
+tracing = { version = "0", features = [
+    "max_level_debug",
+    "release_max_level_info",
+] }
 tracing-subscriber = "0"
 
 # Error handling

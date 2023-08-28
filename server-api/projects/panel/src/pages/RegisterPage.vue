@@ -34,9 +34,15 @@
           />
 
           <div class="text-center">
-            <GSButton type="submit" class="mt-4" :icon="LogIn"
-              >Register</GSButton
+            <GSButton
+              type="submit"
+              class="mt-4"
+              :icon="LogIn"
+              :disabled="!meta.valid"
+              :loading="isSubmitting"
             >
+              Register
+            </GSButton>
           </div>
         </form>
       </GSCard>
@@ -55,6 +61,7 @@ import { object, string, ref } from "yup";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/yup";
 import { useAuthStore } from "@/store/modules/auth";
+import router from "@/router";
 
 const schema = object({
   email: string().email().label("Email address").required(),
@@ -65,7 +72,7 @@ const schema = object({
     .oneOf([ref("password")], "Passwords must match"),
 });
 
-const { errors, handleSubmit } = useForm({
+const { errors, handleSubmit, isSubmitting, meta } = useForm({
   validationSchema: toTypedSchema(schema),
 });
 
@@ -73,6 +80,8 @@ const authStore = useAuthStore();
 const onSubmit = handleSubmit(async (values) => {
   try {
     await authStore.register(values.email, values.password);
+
+    await router.push("/");
   } catch (error) {
     console.error(error);
   }

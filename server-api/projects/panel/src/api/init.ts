@@ -1,9 +1,8 @@
 import { useProgressStore } from "./../store/modules/progress";
-import { Axios } from "axios";
+import axios from "axios";
 
-const api = new Axios({
+const api = axios.create({
   baseURL: "/api",
-  timeout: 1000,
   withCredentials: true,
 });
 

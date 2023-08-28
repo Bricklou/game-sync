@@ -5,11 +5,13 @@ import * as appApi from "@/api/app.api";
 export const useAppStore = defineStore("app", () => {
   const configured = ref<boolean>(false);
   const loading = ref<boolean>(false);
+  const loaded = ref<boolean>(false);
 
   const fetchAppData = async () => {
     const status = await appApi.status();
 
     configured.value = status.configured;
+    loaded.value = true;
   };
 
   const setLoading = (value: boolean) => {
@@ -21,5 +23,6 @@ export const useAppStore = defineStore("app", () => {
     fetchAppData,
     loading,
     setLoading,
+    loaded,
   };
 });

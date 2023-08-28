@@ -5,7 +5,7 @@ use argon2::{
 
 use crate::core::errors::{AppError, AppResult};
 
-#[tracing::instrument(name = "Hashing user password", skip(password))]
+#[tracing::instrument("Hashing user password", skip(password))]
 pub fn hash(password: &String) -> AppResult<String> {
     let salt = SaltString::generate(&mut OsRng);
     let pass = Argon2::default()
@@ -15,7 +15,7 @@ pub fn hash(password: &String) -> AppResult<String> {
     Ok(pass)
 }
 
-#[tracing::instrument(name = "Verifying user password", skip(password, hash))]
+#[tracing::instrument("Verifying user password", skip(password, hash))]
 pub fn verify_password(hash: &str, password: &String) -> AppResult<bool> {
     let parsed_hash = PasswordHash::new(hash)?;
     let res = Argon2::default().verify_password(password.as_bytes(), &parsed_hash);

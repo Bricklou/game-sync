@@ -9,8 +9,8 @@ use std::{
     rc::Rc,
 };
 
-use crate::core::errors::AppError;
-use crate::{core::database::DbPool, repositories};
+use crate::repositories;
+use crate::{core::errors::AppError, data::AppData};
 
 pub struct Auth;
 
@@ -49,6 +49,7 @@ where
 
     forward_ready!(service);
 
+    #[tracing::instrument("AuthMiddleware", skip(self, req))]
     fn call(&self, req: ServiceRequest) -> Self::Future {
         let svc = self.service.clone();
         let session = req.get_session();
@@ -60,8 +61,8 @@ where
                 None => Err(AppError::Unauthorized.into()),
                 Some(user_id) => {
                     // Unwrap because we know that we have the data, otherwise that something is wrong
-                    let db = req.app_data::<web::Data<DbPool>>().unwrap();
-                    let user = repositories::user::get_user_from_id(&db, user_id).await?;
+                    let app_data = req.app_data::<web::Data<AppData>>().unwrap();
+                    let user = repositories::user::get_user_from_id(&app_data.db, user_id).await?;
 
                     if let Some(user) = user {
                         // add the user to the request extensions

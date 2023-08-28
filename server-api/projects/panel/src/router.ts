@@ -53,25 +53,54 @@ router.beforeEach(async (to, _from, next) => {
 
 router.beforeResolve(async (_to, _from, next) => {
   const progress = useProgressStore();
+  const app = useAppStore();
   progress.hide();
   next();
+
+  app.setLoading(false);
 });
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, _from, next) => {
+  // Check if the application is loaded
   const app = useAppStore();
-
-  if (!app.configured && to.name !== "Register") {
-    console.log("Application not configured");
-    return "/register";
-  }
-
-  const authRequired = !to.meta.guest;
   const auth = useAuthStore();
 
-  if (authRequired && !auth.isLoggedIn) {
-    auth.setReturnUrl(to.fullPath);
-    return "/login";
+  // Call this part only when the application is booting
+  if (!app.loaded) {
+    console.debug("Application not loaded");
+    app.setLoading(true);
+    await app.fetchAppData();
+
+    // If the app is configured try to fetch the user
+    if (app.configured) {
+      console.debug("Fetching user");
+      await auth.fetchUser();
+    }
   }
+
+  // If the application is not configured, redirect to the register page
+  if (!app.configured && to.name !== "Register") {
+    console.log("Application not configured");
+    return next("/register");
+  }
+
+  // Then check if the user is logged in
+  const authRequired = !to.meta.guest;
+
+  // If the route require the user to be logged in and
+  // the user is not logged in, redirect to the login page
+  if (authRequired && !auth.isLoggedIn && to.name !== "Login") {
+    auth.setReturnUrl(to.fullPath);
+    return next("/login");
+  }
+
+  // If the route doesn't require the user to be logged in and
+  // the user is logged in, redirect to the home page
+  if (!authRequired && auth.isLoggedIn) {
+    return next("/");
+  }
+
+  next();
 });
 
 export default router;

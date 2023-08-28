@@ -1,5 +1,5 @@
 <template>
-  <div class="relative py-3 mt-2">
+  <div class="relative py-3 mt-2 mb-6">
     <input
       :id="$props.id"
       v-model="value"
@@ -9,7 +9,7 @@
         'rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700',
         'placeholder-gray-400 shadow-sm text-base focus:border-transparent peer',
         ' mt-1 outline-offset-2 invalid:outline invalid:outline-red-600 invalid:outline-2',
-        'placeholder-transparent autofill:bg-white autofill:outline-yellow-500',
+        'placeholder-transparent autofill:bg-white autofill:outline-yellow-500 placeholder:select-none',
         $props.icon ? 'pl-10' : '',
         errorMessage
           ? 'outline outline-red-600 outline-2'
@@ -22,6 +22,7 @@
     <component
       :is="$props.icon"
       v-if="$props.icon"
+      aria-hidden="true"
       :class="[
         'absolute left-2 top-6 peer-focus:text-cyan-600 transition-colors w-6 h-6 pointer-events-none',
         errorMessage ? 'text-red-500' : 'text-gray-400',
