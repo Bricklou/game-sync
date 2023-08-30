@@ -1,4 +1,4 @@
-use actix_session::SessionExt;
+use actix_multi_session::SessionExt;
 use actix_web::{
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
     web, HttpMessage,

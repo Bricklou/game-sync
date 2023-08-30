@@ -1,4 +1,4 @@
-use actix_session::storage::RedisSessionStore;
+use actix_multi_session::storage::RedisSessionStore;
 use tera::Tera;
 
 use crate::{

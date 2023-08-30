@@ -1,19 +1,18 @@
+use actix_multi_session::{provider::OpaqueTokenProvider, SessionMiddleware};
 use actix_web::web::{self, ServiceConfig};
-use time::Duration;
 
 use crate::{
     controllers::api as api_ctrl,
     data::AppData,
-    helpers::opaque_token::middleware::SessionOatMiddleware,
     middlewares::{self, guest::Guest},
 };
 
 pub fn register_route(cfg: &mut ServiceConfig, app_data: &AppData) {
     let store = app_data.session_store.clone();
 
-    let session_middleware = SessionOatMiddleware::builder(store)
-        .session_ttl(Duration::weeks(1))
-        .build();
+    let session_provider = OpaqueTokenProvider::new();
+
+    let session_middleware = SessionMiddleware::builder(store, session_provider).build();
 
     let scope = web::scope("api")
         // Auth routes

@@ -33,16 +33,16 @@ pub enum AppError {
     InternalError,
 
     #[error("Get Session error: {0:?}")]
-    SessionGetError(#[from] actix_session::SessionGetError),
+    SessionGetError(#[from] actix_multi_session::SessionGetError),
 
     #[error("Set Session error: {0:?}")]
-    SessionSetError(#[from] actix_session::SessionInsertError),
+    SessionSetError(#[from] actix_multi_session::SessionInsertError),
 
     #[error("Save session error: {0:?}")]
-    SessionSaveError(#[from] actix_session::storage::SaveError),
+    SessionSaveError(#[from] actix_multi_session::storage::SaveError),
 
     #[error("Load session error: {0:?}")]
-    SessionLoadError(#[from] actix_session::storage::LoadError),
+    SessionLoadError(#[from] actix_multi_session::storage::LoadError),
 
     #[error("Already Exists: {0}")]
     AlreadyExists(String),

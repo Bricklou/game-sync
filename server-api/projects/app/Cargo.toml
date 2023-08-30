@@ -7,7 +7,7 @@ edition = "2021"
 # Web framework
 actix-web = "4"
 actix-rt = "2"
-actix-session = { version = "0", features = ["redis-rs-session"] }
+actix-multi-session = { path = "../actix-multi-session" }
 actix-web-validator = "5"
 actix-web-lab = { version = "0", features = ["spa"] }
 actix-utils = "3"

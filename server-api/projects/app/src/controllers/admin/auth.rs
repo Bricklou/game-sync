@@ -1,4 +1,4 @@
-use actix_session::Session;
+use actix_multi_session::Session;
 use actix_web::{
     web::{self, Data},
     HttpResponse, Responder,

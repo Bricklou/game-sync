@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use actix_session::{storage::SessionStore, Session};
+use actix_multi_session::{storage::SessionStore, Session};
 use actix_web::{
     delete, get, post,
     web::{Data, ReqData},

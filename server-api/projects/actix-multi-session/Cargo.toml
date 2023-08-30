@@ -1,0 +1,28 @@
+[package]
+name = "actix-multi-session"
+version = "0.0.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-service = "2"
+actix-utils = "3"
+actix-web = { version = "4", default-features = false, features = [
+    "cookies",
+    "secure-cookies",
+] }
+
+anyhow = "1"
+async-trait = "0.1"
+derive_more = "0.99"
+rand = "0.8"
+serde = "1"
+serde_json = "1"
+tracing = { version = "0.1", default-features = false, features = ["log"] }
+
+# redis-rs-session
+redis = { version = "0.23", default-features = false, features = [
+    "tokio-comp",
+    "connection-manager",
+] }

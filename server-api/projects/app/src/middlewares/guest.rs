@@ -1,7 +1,7 @@
-use actix_session::SessionExt;
+use actix_multi_session::SessionExt;
 use actix_web::{
     dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
-    web, HttpMessage,
+    web,
 };
 use std::{
     future::{ready, Future, Ready},
@@ -9,8 +9,8 @@ use std::{
     rc::Rc,
 };
 
-use crate::{app, core::errors::AppError, data::AppData};
-use crate::{core::database::DbPool, repositories};
+use crate::repositories;
+use crate::{core::errors::AppError, data::AppData};
 
 pub struct Guest;
 

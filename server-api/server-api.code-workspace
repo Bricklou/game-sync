@@ -1,0 +1,24 @@
+{
+  "folders": [
+    {
+      "name": "server-api",
+      "path": "."
+    },
+    {
+      "name": "app",
+      "path": "projects/app"
+    },
+    {
+      "name": "migration",
+      "path": "projects/migration"
+    },
+    {
+      "name": "panel",
+      "path": "projects/panel"
+    },
+    {
+      "path": "projects/actix-multi-session"
+    }
+  ],
+  "settings": {}
+}
