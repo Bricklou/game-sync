@@ -4,7 +4,7 @@ use actix_web::web::{self, ServiceConfig};
 use crate::{
     controllers::api as api_ctrl,
     data::AppData,
-    middlewares::{self, guest::Guest},
+    middlewares::{auth::Auth, guest::Guest},
 };
 
 pub fn register_route(cfg: &mut ServiceConfig, app_data: &AppData) {
@@ -17,16 +17,12 @@ pub fn register_route(cfg: &mut ServiceConfig, app_data: &AppData) {
     let scope = web::scope("api")
         // Auth routes
         .service(
-            web::scope("auth")
-                .service(web::scope("").service(api_ctrl::auth::login).wrap(Guest))
-                .service(
-                    web::scope("")
-                        .wrap(middlewares::auth::Auth)
-                        .service(api_ctrl::auth::me)
-                        .service(api_ctrl::auth::logout)
-                        .wrap(session_middleware),
-                ),
-        );
+            web::resource("auth")
+                .route(web::get().to(api_ctrl::auth::me).wrap(Auth))
+                .route(web::delete().to(api_ctrl::auth::logout).wrap(Auth))
+                .route(web::post().to(api_ctrl::auth::login).wrap(Guest)),
+        )
+        .wrap(session_middleware);
 
     cfg.service(scope);
 }

@@ -20,9 +20,3 @@ pub struct UserCreateInput {
     #[validate(custom = "validate_required_str")]
     pub password: String,
 }
-
-#[derive(Debug, Serialize)]
-pub struct UserLoginResponse {
-    pub token: String,
-    pub user: UserModel,
-}
