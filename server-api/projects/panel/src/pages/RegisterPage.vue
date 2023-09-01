@@ -51,17 +51,16 @@
 </template>
 
 <script setup lang="ts">
-import GSCard from "@/components/GSCard.vue";
-import GSInput from "@/components/form/GSInput.vue";
-import FullScreenPage from "@/components/partials/FullScreenPage.vue";
 import GSButton from "@/components/base/GSButton.vue";
-import { Lock, LogIn } from "lucide-vue-next";
-import { Mail } from "lucide-vue-next";
+import GSCard from "@/components/base/GSCard.vue";
+import GSInput from "@/components/form/GSInput.vue";
+import { Lock, LogIn, Mail } from "lucide-vue-next";
 import { object, string, ref } from "yup";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/yup";
 import { useAuthStore } from "@/store/modules/auth";
 import router from "@/router";
+import FullScreenPage from "@/components/partials/FullScreenPage.vue";
 
 const schema = object({
   email: string().email().label("Email address").required(),

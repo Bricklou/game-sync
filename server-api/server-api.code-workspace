@@ -24,6 +24,6 @@
     }
   ],
   "settings": {
-    "conventionalCommits.scopes": ["client"]
+    "conventionalCommits.scopes": ["client", "library", "panel"]
   }
 }

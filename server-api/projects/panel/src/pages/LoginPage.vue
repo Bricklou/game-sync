@@ -41,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import GSCard from "@/components/GSCard.vue";
 import GSButton from "@/components/base/GSButton.vue";
+import GSCard from "@/components/base/GSCard.vue";
 import GSInput from "@/components/form/GSInput.vue";
 import FullScreenPage from "@/components/partials/FullScreenPage.vue";
 import router from "@/router";
