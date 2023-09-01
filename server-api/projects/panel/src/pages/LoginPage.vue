@@ -31,7 +31,7 @@
               :disabled="!meta.valid"
               :loading="isSubmitting"
             >
-              Register
+              Login
             </GSButton>
           </div>
         </form>
