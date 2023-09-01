@@ -18,7 +18,12 @@
     },
     {
       "path": "projects/actix-multi-session"
+    },
+    {
+      "path": "../game-sync-client"
     }
   ],
-  "settings": {}
+  "settings": {
+    "conventionalCommits.scopes": ["client"]
+  }
 }
