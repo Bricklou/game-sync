@@ -24,6 +24,7 @@
     }
   ],
   "settings": {
-    "conventionalCommits.scopes": ["client", "library", "panel"]
+    "conventionalCommits.scopes": ["client", "library", "panel"],
+    "vue3snippets.enable-compile-vue-file-on-did-save-code": false
   }
 }
