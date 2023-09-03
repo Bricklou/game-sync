@@ -61,7 +61,6 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _from, next) => {
-  console.log(to.path, to.fullPath);
   // Check if the application is loaded
   const app = useAppStore();
   const authStore = useAuthStore();
@@ -114,7 +113,6 @@ router.beforeEach(async (to, _from, next) => {
 
 router.beforeResolve(async (_to, _from, next) => {
   const app = useAppStore();
-  console.log("Routing to", _to.name);
   next();
 
   app.setLoading(false);
@@ -124,14 +122,11 @@ router.afterEach(async (to, from) => {
   if (["Login", "Setup"].includes(to.name as string)) {
     to.meta.transition = "fade";
 
-    console.log("Transition to", to.meta.transition);
     return;
   }
 
   const toDepth = to.path.split("/").length;
   const fromDepth = from.path.split("/").length;
-
-  console.log(to.meta.navigationIndex, from.meta.navigationIndex);
 
   if (toDepth < fromDepth) {
     to.meta.transition = "fade";
@@ -142,8 +137,6 @@ router.afterEach(async (to, from) => {
     const direction = to.meta.navigationIndex < from.meta.navigationIndex;
     to.meta.transition = direction ? "slide-right" : "slide-left";
   }
-
-  console.log("Transition to", to.meta.transition);
 });
 
 export default router;

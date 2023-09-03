@@ -50,7 +50,6 @@ export async function validateServerUrl(value: string | null): Promise<void> {
 
   // Check if the url is a valid server
   console.debug("Get server infos from response");
-  console.log(response);
   let data: ServerInfos;
   try {
     data = await response.json();
