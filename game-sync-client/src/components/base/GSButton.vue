@@ -5,6 +5,7 @@
       'outline-cyan-600 outline-offset-2 outline-2 focus:outline',
 
       'disabled:opacity-50 disabled:cursor-not-allowed',
+      'inline-grid grid-flow-col gap-2 items-center',
     ]"
     :type="$props.type"
     :disabled="$props.disabled || $props.loading"
@@ -14,7 +15,10 @@
     <component
       :is="$props.icon"
       v-else-if="$props.icon"
-      class="mr-2 inline-block"
+      :class="[
+        'inline-block',
+        direction === 'left' ? 'order-first' : 'order-last',
+      ]"
     />
     <slot />
   </button>
@@ -29,6 +33,7 @@ interface ButtonProps {
   icon?: Icon;
   loading?: boolean;
   disabled?: boolean;
+  direction?: "left" | "right";
 }
 
 // Input type
@@ -37,6 +42,7 @@ withDefaults(defineProps<ButtonProps>(), {
   loading: false,
   icon: undefined,
   disabled: false,
+  direction: "left",
 });
 </script>
 

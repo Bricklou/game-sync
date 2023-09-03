@@ -12,6 +12,8 @@ fn main() {
         .plugin(plugins::logger::register())
         // Single instance plugin
         .plugin(plugins::single_instance::register())
+        // HTTP plugin
+        .plugin(tauri_plugin_http::init())
         // Store plugin
         .plugin(plugins::store::register())
         // Stronghold plugin
@@ -19,9 +21,7 @@ fn main() {
         // Setup
         .setup(setup::setup)
         // Invoke handlers
-        .invoke_handler(tauri::generate_handler![
-            commands::api::get_configured_server
-        ])
+        .invoke_handler(tauri::generate_handler![])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

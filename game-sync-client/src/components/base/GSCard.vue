@@ -1,5 +1,5 @@
 <template>
-  <section class="rounded-lg bg-gray-800 p-8 shadow-md">
+  <section class="rounded-lg bg-gray-800 py-8 px-6 shadow-md">
     <h1 class="font-bold text-3xl">
       {{ $props.title }}
     </h1>

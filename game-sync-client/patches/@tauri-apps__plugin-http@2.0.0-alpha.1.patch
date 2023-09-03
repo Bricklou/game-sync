@@ -1,0 +1,42 @@
+diff --git a/dist-js/index.min.js b/dist-js/index.min.js
+index a61a5cfca422aad611349e6924fa948b8e0cc603..1d08fdc1b40f69fc598a39cea0f94c285eefdf31 100644
+--- a/dist-js/index.min.js
++++ b/dist-js/index.min.js
+@@ -27,7 +27,6 @@ async function fetch(input, init) {
+     const buffer = await req.arrayBuffer();
+     const reqData = buffer.byteLength ? Array.from(new Uint8Array(buffer)) : null;
+     const rid = await window.__TAURI_INVOKE__("plugin:http|fetch", {
+-        cmd: "fetch",
+         method: req.method,
+         url: req.url,
+         headers: Array.from(req.headers.entries()),
+@@ -46,7 +45,7 @@ async function fetch(input, init) {
+     const body = await window.__TAURI_INVOKE__("plugin:http|fetch_read_body", {
+         rid,
+     });
+-    const res = new Response(Uint8Array.from(body), {
++    const res = new Response(new Uint8Array(body), {
+         headers,
+         status,
+         statusText,
+diff --git a/dist-js/index.mjs b/dist-js/index.mjs
+index c7768ebc0abecf32eda4c9e759c7ac40400e00b7..ce9e9b3ab8ac59c5ff3746f8406a002d6d6e94a6 100644
+--- a/dist-js/index.mjs
++++ b/dist-js/index.mjs
+@@ -27,7 +27,6 @@ async function fetch(input, init) {
+     const buffer = await req.arrayBuffer();
+     const reqData = buffer.byteLength ? Array.from(new Uint8Array(buffer)) : null;
+     const rid = await window.__TAURI_INVOKE__("plugin:http|fetch", {
+-        cmd: "fetch",
+         method: req.method,
+         url: req.url,
+         headers: Array.from(req.headers.entries()),
+@@ -46,7 +45,7 @@ async function fetch(input, init) {
+     const body = await window.__TAURI_INVOKE__("plugin:http|fetch_read_body", {
+         rid,
+     });
+-    const res = new Response(Uint8Array.from(body), {
++    const res = new Response(new Uint8Array(body), {
+         headers,
+         status,
+         statusText,

@@ -1,11 +1,9 @@
 use tauri::{App, Manager};
 
-use crate::{modules::tray, plugins};
+use crate::modules::tray;
 
 pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
     tray::create_tray(app.handle())?;
-
-    plugins::store::init(&app.handle())?;
 
     #[cfg(debug_assertions)]
     {

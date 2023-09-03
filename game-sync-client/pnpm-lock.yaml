@@ -4,16 +4,30 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@tauri-apps/plugin-http@2.0.0-alpha.1':
+    hash: 4pyq5ytunslutibmcaj4blsz6a
+    path: patches/@tauri-apps__plugin-http@2.0.0-alpha.1.patch
+
 dependencies:
   '@tauri-apps/api':
     specifier: 2.0.0-alpha.6
     version: 2.0.0-alpha.6
+  '@tauri-apps/plugin-http':
+    specifier: github:tauri-apps/tauri-plugin-http#v2
+    version: github.com/tauri-apps/tauri-plugin-http/50bc7956907eef54a20255b62ea57ff4c2e8585a(patch_hash=4pyq5ytunslutibmcaj4blsz6a)
+  '@tauri-apps/plugin-store':
+    specifier: 2.0.0-alpha.1
+    version: 2.0.0-alpha.1
   '@vee-validate/rules':
     specifier: ^4.11.3
     version: 4.11.3(vue@3.3.4)
   '@vee-validate/yup':
     specifier: ^4.11.3
     version: 4.11.3(vue@3.3.4)
+  lucide-vue-next:
+    specifier: ^0.274.0
+    version: 0.274.0(vue@3.3.4)
   pinia:
     specifier: ^2.1.6
     version: 2.1.6(typescript@5.2.2)(vue@3.3.4)
@@ -35,8 +49,8 @@ devDependencies:
     specifier: 2.0.0-alpha.11
     version: 2.0.0-alpha.11
   '@types/node':
-    specifier: ^20.5.7
-    version: 20.5.7
+    specifier: ^20.5.9
+    version: 20.5.9
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.5.0
     version: 6.5.0(@typescript-eslint/parser@6.5.0)(eslint@8.48.0)(typescript@5.2.2)
@@ -78,10 +92,10 @@ devDependencies:
     version: 5.2.2
   vite:
     specifier: ^4.4.9
-    version: 4.4.9(@types/node@20.5.7)
+    version: 4.4.9(@types/node@20.5.9)
   vite-plugin-dts:
     specifier: ^3.5.3
-    version: 3.5.3(@types/node@20.5.7)(rollup@3.28.1)(typescript@5.2.2)(vite@4.4.9)
+    version: 3.5.3(@types/node@20.5.9)(rollup@3.28.1)(typescript@5.2.2)(vite@4.4.9)
   vue-eslint-parser:
     specifier: ^9.3.1
     version: 9.3.1(eslint@8.48.0)
@@ -408,24 +422,24 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
-  /@microsoft/api-extractor-model@7.27.6(@types/node@20.5.7):
+  /@microsoft/api-extractor-model@7.27.6(@types/node@20.5.9):
     resolution: {integrity: sha512-eiCnlayyum1f7fS2nA9pfIod5VCNR1G+Tq84V/ijDrKrOFVa598BLw145nCsGDMoFenV6ajNi2PR5WCwpAxW6Q==}
     dependencies:
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
-      '@rushstack/node-core-library': 3.59.7(@types/node@20.5.7)
+      '@rushstack/node-core-library': 3.59.7(@types/node@20.5.9)
     transitivePeerDependencies:
       - '@types/node'
     dev: true
 
-  /@microsoft/api-extractor@7.36.4(@types/node@20.5.7):
+  /@microsoft/api-extractor@7.36.4(@types/node@20.5.9):
     resolution: {integrity: sha512-21UECq8C/8CpHT23yiqTBQ10egKUacIpxkPyYR7hdswo/M5yTWdBvbq+77YC9uPKQJOUfOD1FImBQ1DzpsdeQQ==}
     hasBin: true
     dependencies:
-      '@microsoft/api-extractor-model': 7.27.6(@types/node@20.5.7)
+      '@microsoft/api-extractor-model': 7.27.6(@types/node@20.5.9)
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
-      '@rushstack/node-core-library': 3.59.7(@types/node@20.5.7)
+      '@rushstack/node-core-library': 3.59.7(@types/node@20.5.9)
       '@rushstack/rig-package': 0.4.1
       '@rushstack/ts-command-line': 4.15.2
       colors: 1.2.5
@@ -507,7 +521,7 @@ packages:
       rollup: 3.28.1
     dev: true
 
-  /@rushstack/node-core-library@3.59.7(@types/node@20.5.7):
+  /@rushstack/node-core-library@3.59.7(@types/node@20.5.9):
     resolution: {integrity: sha512-ln1Drq0h+Hwa1JVA65x5mlSgUrBa1uHL+V89FqVWQgXd1vVIMhrtqtWGQrhTnFHxru5ppX+FY39VWELF/FjQCw==}
     peerDependencies:
       '@types/node': '*'
@@ -515,7 +529,7 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@types/node': 20.5.7
+      '@types/node': 20.5.9
       colors: 1.2.5
       fs-extra: 7.0.1
       import-lazy: 4.0.0
@@ -653,6 +667,12 @@ packages:
       '@tauri-apps/cli-win32-x64-msvc': 2.0.0-alpha.11
     dev: true
 
+  /@tauri-apps/plugin-store@2.0.0-alpha.1:
+    resolution: {integrity: sha512-rchpcLw9H2Q+hXOTW5HVrUrQupcK6LJ81vY1Y/OAaSu+XwvK25gE1f3ILAMNwTnhTbBzCqbuK0y1m51Kb+ALmA==}
+    dependencies:
+      '@tauri-apps/api': 2.0.0-alpha.6
+    dev: false
+
   /@trysound/sax@0.2.0:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
@@ -670,8 +690,8 @@ packages:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
     dev: true
 
-  /@types/node@20.5.7:
-    resolution: {integrity: sha512-dP7f3LdZIysZnmvP3ANJYTSwg+wLLl8p7RqniVlV7j+oXSXAbt9h0WIBFmJy5inWZoX9wZN6eXx+YXd9Rh3RBA==}
+  /@types/node@20.5.9:
+    resolution: {integrity: sha512-PcGNd//40kHAS3sTlzKB9C9XL4K0sTup8nbG5lC14kzEteTNuAFh9u5nA0o5TWnSG2r/JNPRXFVcHJIIeRlmqQ==}
     dev: true
 
   /@types/semver@7.5.1:
@@ -834,7 +854,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 4.4.9(@types/node@20.5.7)
+      vite: 4.4.9(@types/node@20.5.9)
       vue: 3.3.4
     dev: true
 
@@ -2065,6 +2085,14 @@ packages:
       yallist: 4.0.0
     dev: true
 
+  /lucide-vue-next@0.274.0(vue@3.3.4):
+    resolution: {integrity: sha512-n8qfl0mM1meFt5l/CiBdoLAzl47Zq6kZVQYLQH7LYtAOHab5bFbzmT52OeaBH4G+2LMWHiNlenUHaf9M+y3TFA==}
+    peerDependencies:
+      vue: '>=3.0.1'
+    dependencies:
+      vue: 3.3.4
+    dev: false
+
   /magic-string@0.30.3:
     resolution: {integrity: sha512-B7xGbll2fG/VjP+SWg4sX3JynwIU0mjoTc6MPpKNuIvftk6u6vqhDnk1R80b8C2GBR6ywqy+1DcKBrevBg+bmw==}
     engines: {node: '>=12'}
@@ -3118,7 +3146,7 @@ packages:
       vue: 3.3.4
     dev: false
 
-  /vite-plugin-dts@3.5.3(@types/node@20.5.7)(rollup@3.28.1)(typescript@5.2.2)(vite@4.4.9):
+  /vite-plugin-dts@3.5.3(@types/node@20.5.9)(rollup@3.28.1)(typescript@5.2.2)(vite@4.4.9):
     resolution: {integrity: sha512-h94j/+SR1PhLR9jnEtcjZILagE2QZBAV8V1y3T2Ujcet1VI0Et4dZSU1W8fbnp6obB7B3/b8hArqdi2/9HuH+w==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
@@ -3128,13 +3156,13 @@ packages:
       vite:
         optional: true
     dependencies:
-      '@microsoft/api-extractor': 7.36.4(@types/node@20.5.7)
+      '@microsoft/api-extractor': 7.36.4(@types/node@20.5.9)
       '@rollup/pluginutils': 5.0.4(rollup@3.28.1)
       '@vue/language-core': 1.8.8(typescript@5.2.2)
       debug: 4.3.4
       kolorist: 1.8.0
       typescript: 5.2.2
-      vite: 4.4.9(@types/node@20.5.7)
+      vite: 4.4.9(@types/node@20.5.9)
       vue-tsc: 1.8.8(typescript@5.2.2)
     transitivePeerDependencies:
       - '@types/node'
@@ -3142,7 +3170,7 @@ packages:
       - supports-color
     dev: true
 
-  /vite@4.4.9(@types/node@20.5.7):
+  /vite@4.4.9(@types/node@20.5.9):
     resolution: {integrity: sha512-2mbUn2LlUmNASWwSCNSJ/EG2HuSRTnVNaydp6vMCm5VIqJsjMfbIWtbH2kDuwUVW5mMUKKZvGPX/rqeqVvv1XA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -3170,7 +3198,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.5.7
+      '@types/node': 20.5.9
       esbuild: 0.18.20
       postcss: 8.4.29
       rollup: 3.28.1
@@ -3299,3 +3327,13 @@ packages:
     optionalDependencies:
       commander: 9.5.0
     dev: true
+
+  github.com/tauri-apps/tauri-plugin-http/50bc7956907eef54a20255b62ea57ff4c2e8585a(patch_hash=4pyq5ytunslutibmcaj4blsz6a):
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-http/tar.gz/50bc7956907eef54a20255b62ea57ff4c2e8585a}
+    id: github.com/tauri-apps/tauri-plugin-http/50bc7956907eef54a20255b62ea57ff4c2e8585a
+    name: '@tauri-apps/plugin-http'
+    version: 2.0.0-alpha.1
+    dependencies:
+      '@tauri-apps/api': 2.0.0-alpha.6
+    dev: false
+    patched: true
