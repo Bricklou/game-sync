@@ -20,15 +20,25 @@
 .slide-left-leave-active,
 .slide-right-enter-active,
 .slide-right-leave-active {
-  @apply duration-200 transition-all ease-[cubic-bezier(0.19,1,0.22,1)] overflow-hidden;
+  @apply duration-500 transition-all ease-[cubic-bezier(0.19,1,0.22,1)] w-full h-full;
 }
 
-.slide-left-enter,
-.slide-right-leave-active {
-  @apply opacity-0 transform-gpu translate-x-full;
+.slide-left-enter-to,
+.slide-right-leave-from {
+  @apply absolute right-0;
 }
 
-.slide-left-leave-active,
-.slide-right-enter {
-  @apply opacity-0 transform-gpu -translate-x-full;
+.slide-left-enter-from,
+.slide-right-leave-to {
+  @apply absolute -right-full;
+}
+
+.slide-right-enter-to,
+.slide-left-leave-from {
+  @apply absolute left-0;
+}
+
+.slide-right-enter-from,
+.slide-left-leave-to {
+  @apply absolute -left-full;
 }

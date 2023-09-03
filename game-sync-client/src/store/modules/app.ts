@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import * as appApi from "@/api/app";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
+import { useAuthStore } from "./auth";
+import router from "@/router";
 
 export const useAppStore = defineStore("app", () => {
   const server_url = ref<string | null>(null);
@@ -47,6 +49,18 @@ export const useAppStore = defineStore("app", () => {
     return await tauriFetch(input, init);
   };
 
+  const forgotServer = async () => {
+    const auth = useAuthStore();
+    await auth.logout().catch(console.error);
+
+    await appApi.setConfiguredServer(null);
+    server_url.value = null;
+
+    console.debug("Server url is not configured anymore");
+
+    await router.push("/setup");
+  };
+
   return {
     server_url,
     configured,
@@ -56,5 +70,6 @@ export const useAppStore = defineStore("app", () => {
     loaded,
     setServerUrl,
     fetch,
+    forgotServer,
   };
 });

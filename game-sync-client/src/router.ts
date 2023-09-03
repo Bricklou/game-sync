@@ -44,11 +44,19 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
+        path: "/dashboard/games",
+        name: "Games",
+        component: () => import("./pages/dashboard/GamesPage.vue"),
+        meta: {
+          navigationIndex: 1,
+        },
+      },
+      {
         path: "/dashboard/account",
         name: "Account",
         component: () => import("./pages/dashboard/AccountPage.vue"),
         meta: {
-          navigationIndex: 1,
+          navigationIndex: 2,
         },
       },
     ],

@@ -25,7 +25,7 @@ pub async fn seed_database(pool: &DbPool) -> AppResult<()> {
 
     let user = UserCreateInput {
         email: "admin@admin.com".to_owned(),
-        password: "admin".to_owned(),
+        password: "password".to_owned(),
     };
 
     repositories::user::create_user(pool, &user).await?;

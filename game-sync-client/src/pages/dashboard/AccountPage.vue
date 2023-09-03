@@ -29,16 +29,28 @@
       </table>
     </div>
 
-    <div class="text-center">
+    <div class="flex flex-row items-center justify-center gap-4">
       <GSButton
         type="button"
         bg-color="bg-transparent-600 hover:enabled:bg-red-600"
         border-color="border border-red-600"
         text-color="text-red-600 hover:enabled:text-white"
+        direction="right"
+        :icon="LogOut"
         @click="auth.logout()"
       >
-        <LogOut class="w-6 h-6" />
         Logout
+      </GSButton>
+
+      <GSButton
+        type="button"
+        bg-color="bg-transparent-600 hover:enabled:bg-red-600"
+        border-color="border border-red-600"
+        text-color="text-red-600 hover:enabled:text-white"
+        :icon="Trash2"
+        @click="app.forgotServer()"
+      >
+        Reset
       </GSButton>
     </div>
   </div>
@@ -48,7 +60,7 @@
 import GSButton from "@/components/base/GSButton.vue";
 import { useAppStore } from "@/store/modules/app";
 import { useAuthStore } from "@/store/modules/auth";
-import { LogOut } from "lucide-vue-next";
+import { LogOut, Trash2 } from "lucide-vue-next";
 
 const app = useAppStore();
 const auth = useAuthStore();
