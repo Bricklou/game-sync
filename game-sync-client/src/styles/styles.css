@@ -2,6 +2,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "tailwindcss/variants";
+@import "./route-animations";
 
 html,
 body {
@@ -9,7 +10,7 @@ body {
 }
 
 #app {
-  @apply min-h-screen;
+  @apply min-h-screen flex flex-col;
 }
 
 *:focus-visible {

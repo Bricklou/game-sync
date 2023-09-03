@@ -7,6 +7,7 @@ export async function getConfiguredServer(): Promise<string | null> {
 
 export async function setConfiguredServer(url: string | null): Promise<void> {
   await store.set("server_url", url);
+  await store.save();
 }
 
 interface ServerInfos {

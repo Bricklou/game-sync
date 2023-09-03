@@ -1,0 +1,30 @@
+<template>
+  <footer class="bg-gray-900 text-white px-4">
+    <ul class="flex flex-row items-center justify-center">
+      <li class="flex-1">
+        <router-link
+          to="/dashboard/home"
+          title="Home"
+          class="hover:text-cyan-500 block w-full h-full py-4 transition-colors duration-100 ease-in-out"
+          active-class="text-cyan-600"
+        >
+          <HomeIcon class="w-6 h-6 mx-auto" />
+        </router-link>
+      </li>
+      <li class="flex-1">
+        <router-link
+          to="/dashboard/account"
+          title="Account"
+          class="hover:text-cyan-500 block w-full h-full py-4 transition-colors duration-100 ease-in-out"
+          active-class="text-cyan-600"
+        >
+          <UserIcon class="w-6 h-6 mx-auto" />
+        </router-link>
+      </li>
+    </ul>
+  </footer>
+</template>
+
+<script setup lang="ts">
+import { HomeIcon, UserIcon } from "lucide-vue-next";
+</script>

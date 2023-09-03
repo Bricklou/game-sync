@@ -1,11 +1,13 @@
 <template>
-  <template v-if="!appStore.loading">
-    <main class="flex flex-col flex-1">
-      <router-view />
-    </main>
-  </template>
+  <div v-if="!appStore.loading" class="min-h-screen flex flex-col">
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </div>
 
-  <LoadingIndicator v-else />
+  <LoadingIndicator v-else class="min-h-screen flex flex-col" />
 </template>
 
 <script setup lang="ts">

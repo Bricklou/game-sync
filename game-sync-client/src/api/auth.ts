@@ -2,7 +2,10 @@ import { useAppStore } from "@/store/modules/app";
 import { User } from "@/types/user";
 import { store } from "./store";
 
-export async function login(email: string, password: string): Promise<User> {
+export async function login(
+  email: string,
+  password: string,
+): Promise<[string, User]> {
   const appStore = useAppStore();
 
   // Send the request
@@ -42,6 +45,7 @@ export async function login(email: string, password: string): Promise<User> {
 
   // Store the token
   await store.set("access_token", token);
+  await store.save();
 
   // Retrieve the user infos from the response
   let data: User;
@@ -57,7 +61,7 @@ export async function login(email: string, password: string): Promise<User> {
   }
 
   // Return the user infos
-  return data;
+  return [token, data];
 }
 
 export async function logout(token: string): Promise<void> {
@@ -79,6 +83,9 @@ export async function logout(token: string): Promise<void> {
     console.error(response);
     throw new Error("Failed to logout: status code " + response.status);
   }
+
+  await store.delete("access_token");
+  await store.save();
 }
 
 export async function refresh(token: string): Promise<User> {
@@ -103,6 +110,15 @@ export async function refresh(token: string): Promise<User> {
   if (!response.ok) {
     console.error(response);
     throw new Error("Failed to refresh: status code " + response.status);
+  }
+
+  // Extract the token from the response
+  let newToken = response.headers.get("WWW-Authenticate");
+  if (newToken) {
+    newToken = token.replace("Bearer ", "");
+    // Store the token
+    await store.set("access_token", token);
+    await store.save();
   }
 
   let data: User;

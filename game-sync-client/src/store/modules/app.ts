@@ -12,6 +12,9 @@ export const useAppStore = defineStore("app", () => {
 
   const loadLocalInfos = async () => {
     server_url.value = await appApi.getConfiguredServer();
+    if (server_url.value) {
+      console.debug("Server url is configured");
+    }
     loaded.value = true;
   };
 

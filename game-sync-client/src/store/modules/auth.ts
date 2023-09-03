@@ -2,6 +2,7 @@ import { User } from "@/types/user";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import * as authApi from "@/api/auth";
+import router from "@/router";
 
 export const useAuthStore = defineStore("auth", () => {
   const user = ref<User | null>(null);
@@ -18,14 +19,13 @@ export const useAuthStore = defineStore("auth", () => {
       try {
         await refresh();
       } catch (e) {
-        token.value = null;
+        await logout();
       }
     }
   };
 
   const login = async (email: string, password: string) => {
-    const data = await authApi.login(email, password);
-    user.value = data;
+    [token.value, user.value] = await authApi.login(email, password);
   };
 
   const refresh = async () => {
@@ -33,8 +33,13 @@ export const useAuthStore = defineStore("auth", () => {
       throw new Error("Cannot refresh if the token is not set");
     }
 
-    const data = await authApi.refresh(token.value);
-    user.value = data;
+    try {
+      const data = await authApi.refresh(token.value);
+      user.value = data;
+    } catch (e) {
+      await logout();
+      throw e;
+    }
   };
 
   const logout = async () => {
@@ -44,6 +49,9 @@ export const useAuthStore = defineStore("auth", () => {
 
     user.value = null;
     await authApi.logout(token.value);
+    token.value = null;
+
+    await router.push({ name: "Login" });
   };
 
   return {

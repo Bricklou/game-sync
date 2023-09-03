@@ -14,6 +14,8 @@ fn main() {
         .plugin(plugins::single_instance::register())
         // HTTP plugin
         .plugin(tauri_plugin_http::init())
+        // Shell plugin
+        .plugin(tauri_plugin_shell::init())
         // Store plugin
         .plugin(plugins::store::register())
         // Stronghold plugin

@@ -2,21 +2,56 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { useAppStore } from "./store/modules/app";
 import { useAuthStore } from "./store/modules/auth";
 
+declare module "vue-router" {
+  interface RouteMeta {
+    fullScreen?: boolean;
+    transition?: "fade" | "slide-left" | "slide-right";
+    navigationIndex?: number;
+  }
+}
+
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    name: "Home",
-    component: () => import("./pages/HomePage.vue"),
+    redirect: "/dashboard/home",
   },
   {
     path: "/setup",
     name: "Setup",
     component: () => import("./pages/SetupPage.vue"),
+    meta: {
+      fullScreen: true,
+    },
   },
   {
     path: "/login",
     name: "Login",
     component: () => import("./pages/LoginPage.vue"),
+    meta: {
+      fullScreen: true,
+    },
+  },
+  {
+    path: "/dashboard",
+    component: () => import("./components/partials/MainLayout.vue"),
+    children: [
+      {
+        path: "/dashboard/home",
+        name: "Home",
+        component: () => import("./pages/dashboard/HomePage.vue"),
+        meta: {
+          navigationIndex: 0,
+        },
+      },
+      {
+        path: "/dashboard/account",
+        name: "Account",
+        component: () => import("./pages/dashboard/AccountPage.vue"),
+        meta: {
+          navigationIndex: 1,
+        },
+      },
+    ],
   },
 ];
 
@@ -26,6 +61,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _from, next) => {
+  console.log(to.path, to.fullPath);
   // Check if the application is loaded
   const app = useAppStore();
   const authStore = useAuthStore();
@@ -49,6 +85,10 @@ router.beforeEach(async (to, _from, next) => {
 
     // If the user is on the setup page, let him pass
     return next();
+  } else {
+    if (to.name === "Setup") {
+      return next("/dashboard/home");
+    }
   }
 
   // Here the application is configured
@@ -63,6 +103,10 @@ router.beforeEach(async (to, _from, next) => {
 
     // If the user is on the login page, let him pass
     return next();
+  } else {
+    if (to.name === "Login") {
+      return next("/dashboard/home");
+    }
   }
 
   next();
@@ -70,9 +114,36 @@ router.beforeEach(async (to, _from, next) => {
 
 router.beforeResolve(async (_to, _from, next) => {
   const app = useAppStore();
+  console.log("Routing to", _to.name);
   next();
 
   app.setLoading(false);
+});
+
+router.afterEach(async (to, from) => {
+  if (["Login", "Setup"].includes(to.name as string)) {
+    to.meta.transition = "fade";
+
+    console.log("Transition to", to.meta.transition);
+    return;
+  }
+
+  const toDepth = to.path.split("/").length;
+  const fromDepth = from.path.split("/").length;
+
+  console.log(to.meta.navigationIndex, from.meta.navigationIndex);
+
+  if (toDepth < fromDepth) {
+    to.meta.transition = "fade";
+  } else if (
+    to.meta.navigationIndex !== undefined &&
+    from.meta.navigationIndex !== undefined
+  ) {
+    const direction = to.meta.navigationIndex < from.meta.navigationIndex;
+    to.meta.transition = direction ? "slide-right" : "slide-left";
+  }
+
+  console.log("Transition to", to.meta.transition);
 });
 
 export default router;

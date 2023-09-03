@@ -1,11 +1,17 @@
 <template>
   <button
     :class="[
-      'px-4 py-2 bg-cyan-600 hover:enabled:bg-cyan-700 rounded-md motion-safe:transition-all duration-100 text-white',
-      'outline-cyan-600 outline-offset-2 outline-2 focus:outline',
+      'px-4 py-2 rounded-md motion-safe:transition-all duration-100',
+      'outline-offset-2 outline-2 focus:outline',
 
       'disabled:opacity-50 disabled:cursor-not-allowed',
       'inline-grid grid-flow-col gap-2 items-center',
+
+      // Variables
+      textColor,
+      bgColor,
+      outlineColor,
+      borderColor,
     ]"
     :type="$props.type"
     :disabled="$props.disabled || $props.loading"
@@ -34,6 +40,10 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   direction?: "left" | "right";
+  textColor?: string;
+  bgColor?: string;
+  outlineColor?: string;
+  borderColor?: string;
 }
 
 // Input type
@@ -43,6 +53,10 @@ withDefaults(defineProps<ButtonProps>(), {
   icon: undefined,
   disabled: false,
   direction: "left",
+  textColor: "text-white",
+  bgColor: "bg-cyan-600 hover:enabled:bg-cyan-700",
+  outlineColor: "outline-cyan-600",
+  borderColor: "",
 });
 </script>
 

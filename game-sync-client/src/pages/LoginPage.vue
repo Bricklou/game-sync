@@ -69,7 +69,7 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     await authStore.login(values.email, values.password);
 
-    await router.push("/");
+    await router.push({ name: "Home" });
   } catch (error) {
     if (error instanceof Error) {
       setFieldError("email", error.message);

@@ -12,6 +12,7 @@
   "dependencies": {
     "@tauri-apps/api": "2.0.0-alpha.6",
     "@tauri-apps/plugin-http": "github:tauri-apps/tauri-plugin-http#v2",
+    "@tauri-apps/plugin-shell": "2.0.0-alpha.1",
     "@tauri-apps/plugin-store": "2.0.0-alpha.1",
     "@vee-validate/rules": "^4.11.3",
     "@vee-validate/yup": "^4.11.3",
