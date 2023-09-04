@@ -1,14 +1,15 @@
 <template>
   <div class="relative py-3 mt-2 mb-6">
-    <input
+    <textarea
       :id="$props.id"
+      ref="textarea"
       v-model="value"
       :type="$props.type"
       :name="$props.name"
       :class="[
         'rounded-lg flex-1 appearance-none border w-full py-2 px-4 text-gray-700 shadow-sm text-base peer',
         'mt-1 outline-offset-2 invalid:outline invalid:outline-red-600 invalid:outline-2',
-        'placeholder-transparent autofill:outline-yellow-500',
+        'placeholder-transparent autofill:outline-yellow-500 resize-none',
         bgColor,
         borderColor,
         $props.icon ? 'pl-10' : '',
@@ -18,7 +19,7 @@
       ]"
       :placeholder="$props.label"
       :autocomplete="$props.autocompletion"
-    />
+    ></textarea>
 
     <component
       :is="$props.icon"
@@ -55,8 +56,9 @@
 <script setup lang="ts">
 import { Icon } from "lucide-vue-next";
 import { useField } from "vee-validate";
+import { nextTick, ref, watch } from "vue";
 
-interface InputProps {
+interface TextareaProps {
   type?: "text" | "email" | "password" | "url";
   id: string;
   name: string;
@@ -67,7 +69,7 @@ interface InputProps {
   bgColor?: string;
 }
 // Input type
-const props = withDefaults(defineProps<InputProps>(), {
+const props = withDefaults(defineProps<TextareaProps>(), {
   type: "text",
   icon: undefined,
   autocompletion: undefined,
@@ -75,5 +77,16 @@ const props = withDefaults(defineProps<InputProps>(), {
   bgColor: "bg-white autofill:bg-white",
 });
 
-const { value, errorMessage } = useField(() => props.name);
+const textarea = ref<HTMLTextAreaElement | null>(null);
+const { value, errorMessage } = useField<string>(() => props.name);
+
+watch(value, () => {
+  if (!textarea.value) return;
+  textarea.value.style.height = "auto";
+
+  nextTick(() => {
+    if (!textarea.value) return;
+    textarea.value.style.height = `${textarea.value?.scrollHeight + 2}px`;
+  });
+});
 </script>

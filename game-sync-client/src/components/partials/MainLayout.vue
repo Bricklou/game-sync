@@ -4,8 +4,15 @@
     <main
       class="flex flex-col flex-1 bg-gray-50 text-gray-900 overflow-hidden relative"
     >
-      <router-view v-slot="{ Component, route }">
-        <transition :name="route.meta.transition ?? 'fade'">
+      <router-view v-slot="{ Component, route, route: { meta } }">
+        <transition
+          :name="meta.transition ?? 'fade'"
+          :mode="
+            meta.transition === 'fade' || meta.transition === undefined
+              ? 'out-in'
+              : 'default'
+          "
+        >
           <component :is="Component" :key="route.path" />
         </transition>
       </router-view>

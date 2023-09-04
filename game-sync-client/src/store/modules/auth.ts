@@ -19,7 +19,16 @@ export const useAuthStore = defineStore("auth", () => {
       try {
         await refresh();
       } catch (e) {
-        await logout();
+        console.log("Token is invalid, login out");
+
+        if (!token.value) {
+          throw new Error("Cannot logout if the token is not set");
+        }
+
+        user.value = null;
+        token.value = null;
+
+        //await router.push({ name: "Login" });
       }
     }
   };

@@ -35,7 +35,7 @@ import { Icon } from "lucide-vue-next";
 import { Loader2 } from "lucide-vue-next";
 
 interface ButtonProps {
-  type: "button" | "submit" | "reset";
+  type?: "button" | "submit" | "reset";
   icon?: Icon;
   loading?: boolean;
   disabled?: boolean;
