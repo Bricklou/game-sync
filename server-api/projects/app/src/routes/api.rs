@@ -22,6 +22,12 @@ pub fn register_route(cfg: &mut ServiceConfig, app_data: &AppData) {
                 .route(web::delete().to(api_ctrl::auth::logout).wrap(Auth))
                 .route(web::post().to(api_ctrl::auth::login).wrap(Guest)),
         )
+        .service(
+            web::resource("games")
+                .route(web::get().to(api_ctrl::games::get_games))
+                .route(web::post().to(api_ctrl::games::create_game))
+                .wrap(Auth),
+        )
         .wrap(session_middleware);
 
     cfg.service(scope);

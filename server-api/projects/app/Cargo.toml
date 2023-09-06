@@ -21,6 +21,8 @@ validator = { version = "0.16", features = ["derive"] }
 argon2 = { version = "0", "features" = ["std"] }
 rand = { version = "0", features = ["std"] }
 hex = "0"
+uuid = { version = "1", features = ["v4"] }
+minio-rsc = { version = "0", features = ["fs-tokio"] }
 
 # Database
 sea-orm = { workspace = true }
