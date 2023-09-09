@@ -179,8 +179,6 @@ async function fetchGames(page: number = 0) {
     });
     data.value = games.data;
     meta.value = games.meta;
-
-    console.log(games);
   } catch (e) {
     if (e instanceof HttpError) {
       error.value = e.message;

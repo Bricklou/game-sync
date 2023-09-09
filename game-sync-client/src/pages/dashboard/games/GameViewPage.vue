@@ -30,10 +30,30 @@ import LoadingSpinner from "@/components/base/LoadingSpinner.vue";
 import { ArrowLeft } from "lucide-vue-next";
 import { Game } from "@/types/game";
 import { onBeforeMount, ref } from "vue";
+import { useRoute } from "vue-router";
+import { HttpError } from "@/types/http_errors";
+import { getGame } from "@/api/game";
+
+const route = useRoute();
 
 const game = ref<Game | null>(null);
+const error = ref<string | null>(null);
+
+async function fetchGame() {
+  try {
+    const gameId = Number.parseInt(route.params.id as string);
+    game.value = await getGame(gameId);
+    console.log(game.value);
+  } catch (e) {
+    if (e instanceof HttpError) {
+      error.value = e.message;
+    } else {
+      error.value = "An unknown error occurred";
+    }
+  }
+}
 
 onBeforeMount(() => {
-  console.log("hello");
+  fetchGame();
 });
 </script>

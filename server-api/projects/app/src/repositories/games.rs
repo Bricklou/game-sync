@@ -70,3 +70,12 @@ pub async fn create_games(db: &DbPool, game: &GameCreateInput) -> AppResult<Game
 
     Ok(game)
 }
+
+pub async fn get_game(db: &DbPool, id: i32) -> AppResult<Option<GameModel>> {
+    let game = Game::find_by_id(id)
+        .one(db)
+        .await
+        .map_err(AppError::DatabaseError)?;
+
+    Ok(game)
+}

@@ -2,11 +2,15 @@ use actix_web::{web::Data, HttpResponse, Responder};
 
 use crate::{
     core::{
-        errors::AppResult,
-        types::{ValidatedJson, ValidatedQuery},
+        errors::{AppError, AppResult},
+        types::{ValidatedJson, ValidatedPath, ValidatedQuery},
     },
     data::AppData,
-    models::{games::GameCreateInput, pagination::Pagination, search::Search},
+    models::{
+        games::{GameCreateInput, GameViewPath},
+        pagination::Pagination,
+        search::Search,
+    },
     repositories,
 };
 
@@ -22,6 +26,7 @@ pub async fn get_games(
     Ok(HttpResponse::Ok().json(games))
 }
 
+#[tracing::instrument(name = "POST /api/games", skip(data))]
 pub async fn create_game(
     input: ValidatedJson<GameCreateInput>,
     data: Data<AppData>,
@@ -29,4 +34,18 @@ pub async fn create_game(
     let game = repositories::games::create_games(&data.db, &input).await?;
 
     Ok(HttpResponse::Ok().json(game))
+}
+
+#[tracing::instrument(name = "GET /api/games/{id}", skip(data))]
+pub async fn get_game(
+    path: ValidatedPath<GameViewPath>,
+    data: Data<AppData>,
+) -> AppResult<impl Responder> {
+    let game = repositories::games::get_game(&data.db, path.into_inner().id).await?;
+
+    if let Some(game) = game {
+        return Ok(HttpResponse::Ok().json(game));
+    }
+
+    Err(AppError::NotFoundError)
 }

@@ -28,6 +28,11 @@ pub fn register_route(cfg: &mut ServiceConfig, app_data: &AppData) {
                 .route(web::post().to(api_ctrl::games::create_game))
                 .wrap(Auth),
         )
+        .service(
+            web::resource("games/{id}")
+                .route(web::get().to(api_ctrl::games::get_game))
+                .wrap(Auth),
+        )
         .wrap(session_middleware);
 
     cfg.service(scope);
