@@ -12,10 +12,32 @@
     </header>
 
     <main class="flex-1 flex flex-col">
+      <div class="mx-4 flex flex-row items-center gap-2">
+        <GSInput
+          id="search"
+          label="Search a game"
+          name="search"
+          type="search"
+          class="flex-1"
+          :icon="Search"
+          :disabled="loading || !!error || !data?.length"
+          @input="onSearch($event.target.value)"
+        />
+        <button
+          type="button"
+          tabindex="0"
+          class="mt-2 hover:bg-cyan-500 hover:bg-opacity-25 rounded-md p-2 group-focus:"
+          @click="onSort()"
+        >
+          <ArrowDownAZ v-if="sortAsc" class="w-6 h-6 text-gray-700" />
+          <ArrowUpAZ v-else class="w-6 h-6 text-gray-700" />
+        </button>
+      </div>
+
       <!-- Games list -->
       <ul
         v-if="!loading && data?.length"
-        class="flex-auto overflow-y-auto h-96 scroll-smooth scroll-m-4"
+        class="flex-auto overflow-y-auto h-10 scroll-smooth scroll-m-4"
       >
         <li v-for="game in data" :key="game.id">
           <router-link :to="`/dashboard/games/${game.id}`">
@@ -76,13 +98,21 @@
 <script setup lang="ts">
 import GSButton from "@/components/base/GSButton.vue";
 import LoadingSpinner from "@/components/base/LoadingSpinner.vue";
-import { PlusIcon, ServerCrash } from "lucide-vue-next";
+import GSInput from "@/components/form/GSInput.vue";
+import {
+  PlusIcon,
+  ServerCrash,
+  Search,
+  Unplug,
+  ArrowUpAZ,
+  ArrowDownAZ,
+} from "lucide-vue-next";
 import { useRouter } from "vue-router";
 import { getGames } from "@/api/game";
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, watch } from "vue";
 import { Game } from "@/types/game";
 import { HttpError } from "@/types/http_errors";
-import { Unplug } from "lucide-vue-next";
+import { debounce } from "@/utils/debounce";
 
 const router = useRouter();
 
@@ -91,10 +121,19 @@ const data = ref<Game[]>([]);
 const meta = ref({} as any);
 const error = ref<string | null>(null);
 
+const sortAsc = ref(true);
+const searchInput = ref("");
+
 async function fetchGames() {
-  loading.value = true;
+  let timeout = setTimeout(() => {
+    loading.value = true;
+  }, 500);
+
   try {
-    const games = await getGames();
+    const games = await getGames({
+      sortOrder: sortAsc.value ? "asc" : "desc",
+      search: searchInput.value,
+    });
     data.value = games.data;
     meta.value = games.meta;
 
@@ -106,11 +145,23 @@ async function fetchGames() {
       error.value = "An unknown error occurred";
     }
   } finally {
+    clearTimeout(timeout);
     loading.value = false;
   }
 }
 
+const onSearch = debounce((value: string) => {
+  searchInput.value = value;
+}, 200);
+const onSort = debounce(() => {
+  sortAsc.value = !sortAsc.value;
+}, 200);
+
 onBeforeMount(() => {
+  fetchGames();
+});
+
+watch([sortAsc, searchInput], () => {
   fetchGames();
 });
 </script>

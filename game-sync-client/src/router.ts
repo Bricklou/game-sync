@@ -52,12 +52,17 @@ const routes: RouteRecordRaw[] = [
           {
             path: "/dashboard/games",
             name: "Games",
-            component: () => import("./pages/dashboard/GamesPage.vue"),
+            component: () => import("./pages/dashboard/games/GamesPage.vue"),
           },
           {
             path: "/dashboard/games/new",
             name: "AddGame",
             component: () => import("./pages/dashboard/games/AddGamePage.vue"),
+          },
+          {
+            path: "/dashboard/games/:id",
+            name: "GameView",
+            component: () => import("./pages/dashboard/games/GameViewPage.vue"),
           },
         ],
       },

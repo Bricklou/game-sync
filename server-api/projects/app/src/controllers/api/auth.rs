@@ -5,10 +5,7 @@ use actix_web::{
 };
 
 use crate::{
-    core::{
-        errors::{AppError, AppResult},
-        types::ValidatedJson,
-    },
+    core::{errors::AppResult, types::ValidatedJson},
     data::AppData,
     entities::user::Model as UserModel,
     models::user::UserLoginRequest,

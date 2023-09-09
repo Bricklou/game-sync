@@ -6,18 +6,18 @@ use crate::{
         types::{ValidatedJson, ValidatedQuery},
     },
     data::AppData,
-    models::{games::GameCreateInput, pagination::Pagination},
+    models::{games::GameCreateInput, pagination::Pagination, search::Search},
     repositories,
 };
 
 #[tracing::instrument(name = "GET /api/games", skip(data))]
 pub async fn get_games(
-    query: ValidatedQuery<Pagination>,
+    pagination_query: ValidatedQuery<Pagination>,
+    search_query: ValidatedQuery<Search>,
     data: Data<AppData>,
 ) -> AppResult<impl Responder> {
     let games =
-        repositories::games::paginate_games(&data.db, query.get_page(), query.get_per_page())
-            .await?;
+        repositories::games::paginate_games(&data.db, &pagination_query, &search_query).await?;
 
     Ok(HttpResponse::Ok().json(games))
 }

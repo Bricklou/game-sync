@@ -1,5 +1,5 @@
 <template>
-  <div class="relative py-3 mt-2 mb-6">
+  <div class="relative py-3 mt-2">
     <input
       :id="$props.id"
       v-model="value"
@@ -57,7 +57,7 @@ import { Icon } from "lucide-vue-next";
 import { useField } from "vee-validate";
 
 interface InputProps {
-  type?: "text" | "email" | "password" | "url";
+  type?: "text" | "email" | "password" | "url" | "search";
   id: string;
   name: string;
   label: string;

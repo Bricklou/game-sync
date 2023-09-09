@@ -29,16 +29,27 @@ export async function createGame(game: GameInput): Promise<void> {
   }
 }
 
-export async function getGames(
-  input?: PaginationQuery,
-): Promise<PaginationResponse<Game>> {
+export async function getGames({
+  pagination = undefined,
+  sortOrder = "asc",
+  search,
+}: {
+  pagination?: PaginationQuery;
+  sortOrder: "asc" | "desc";
+  search?: string;
+}): Promise<PaginationResponse<Game>> {
   const appStore = useAppStore();
 
   let response: Response;
   try {
     const params = new URLSearchParams();
-    if (input?.page) params.set("page", input.page.toString());
-    if (input?.perPage) params.set("per_page", input.perPage.toString());
+    if (pagination?.page) params.set("page", pagination.page.toString());
+    if (pagination?.perPage)
+      params.set("per_page", pagination.perPage.toString());
+
+    params.set("sort_order", sortOrder);
+
+    if (search) params.set("search", search);
 
     response = await appStore.fetch("/api/games?" + params.toString());
   } catch (e) {

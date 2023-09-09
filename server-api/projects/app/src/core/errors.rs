@@ -55,9 +55,6 @@ pub enum AppError {
     #[error("Unknown Error")]
     UnknownError,
 
-    #[error("Not Found")]
-    NotFound,
-
     #[error(transparent)]
     Other(#[from] anyhow::Error),
 }
@@ -73,7 +70,7 @@ impl ResponseError for AppError {
             AppError::NotFoundError => actix_web::http::StatusCode::NOT_FOUND,
             AppError::Unauthorized => actix_web::http::StatusCode::UNAUTHORIZED,
             AppError::AlreadyExists(_) => actix_web::http::StatusCode::CONFLICT,
-            AppError::NotFound => actix_web::http::StatusCode::NOT_FOUND,
+            AppError::NotFoundError => actix_web::http::StatusCode::NOT_FOUND,
             _ => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
