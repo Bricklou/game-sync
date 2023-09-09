@@ -1,5 +1,7 @@
-use sea_orm::entity::prelude::*;
+use sea_orm::{entity::prelude::*, Set};
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
+
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "game")]
@@ -27,4 +29,21 @@ impl ActiveModelBehavior for ActiveModel {
             ..ActiveModelTrait::default()
         }
     }
+
+    /// Will be triggered before insert / update
+    async fn before_save<C>(self, _db: &C, _insert: bool) -> Result<Self, DbErr>
+    where
+        C: ConnectionTrait,
+    {
+        let mut this = self;
+
+        {
+            let now = OffsetDateTime::now_utc();
+            this.updated_at = Set(now);
+        }
+
+        Ok(this)
+    }
+
+
 }

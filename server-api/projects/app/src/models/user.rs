@@ -1,8 +1,7 @@
 use std::fmt::Debug;
 
-use crate::entities::user::Model as UserModel;
 use crate::helpers::validation::required_str::validate_required_str;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use validator::Validate;
 
 #[derive(Debug, Deserialize, Validate)]

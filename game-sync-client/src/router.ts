@@ -45,17 +45,18 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: "/dashboard/games",
-        name: "Games",
         meta: {
           navigationIndex: 1,
         },
         children: [
           {
             path: "/dashboard/games",
+            name: "Games",
             component: () => import("./pages/dashboard/GamesPage.vue"),
           },
           {
             path: "/dashboard/games/new",
+            name: "AddGame",
             component: () => import("./pages/dashboard/games/AddGamePage.vue"),
           },
         ],

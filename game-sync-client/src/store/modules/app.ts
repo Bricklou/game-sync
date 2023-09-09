@@ -46,6 +46,18 @@ export const useAppStore = defineStore("app", () => {
       input = new URL(input.toString(), server_url.value);
     }
 
+    const auth = useAuthStore();
+    if (!init) {
+      init = {
+        headers: {},
+      };
+    }
+    if (auth.token) {
+      init.headers = Object.assign(init?.headers || {}, {
+        Authorization: `Bearer ${auth.token}`,
+      });
+    }
+
     return await tauriFetch(input, init);
   };
 

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use actix_web::{
     error::{JsonPayloadError, ResponseError},
     HttpRequest, HttpResponse,
@@ -53,6 +55,9 @@ pub enum AppError {
     #[error("Unknown Error")]
     UnknownError,
 
+    #[error("Not Found")]
+    NotFound,
+
     #[error(transparent)]
     Other(#[from] anyhow::Error),
 }
@@ -68,6 +73,7 @@ impl ResponseError for AppError {
             AppError::NotFoundError => actix_web::http::StatusCode::NOT_FOUND,
             AppError::Unauthorized => actix_web::http::StatusCode::UNAUTHORIZED,
             AppError::AlreadyExists(_) => actix_web::http::StatusCode::CONFLICT,
+            AppError::NotFound => actix_web::http::StatusCode::NOT_FOUND,
             _ => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
@@ -82,12 +88,14 @@ impl ResponseError for AppError {
 #[derive(Serialize)]
 struct ErrorJson {
     message: String,
+    fields: Option<HashMap<String, Vec<String>>>,
 }
 
 #[tracing::instrument("json_error_handler", skip(err, _req))]
 pub fn json_error_handler(err: JsonPayloadError, _req: &HttpRequest) -> actix_web::Error {
     let details = ErrorJson {
         message: err.to_string(),
+        fields: None,
     };
 
     let resp = match &err {
@@ -110,6 +118,7 @@ pub fn validated_json_error_handler(
 
     let details = ErrorJson {
         message: err.to_string(),
+        fields: None,
     };
 
     let resp = match &err {
@@ -120,9 +129,52 @@ pub fn validated_json_error_handler(
         actix_web_validator::Error::JsonPayloadError(JsonPayloadError::ContentType) => {
             HttpResponse::UnsupportedMediaType().json(details)
         }
-        Error::Validate(json_err) => {
-            tracing::error!("Validation error: {}", json_err);
-            HttpResponse::UnprocessableEntity().json(details)
+        actix_web_validator::Error::JsonPayloadError(json_payload_error) => {
+            tracing::error!("JsonPayloadError: {}", json_payload_error);
+
+            match json_payload_error {
+                JsonPayloadError::Deserialize(json_err) => {
+                    if json_err.is_eof() {
+                        HttpResponse::UnprocessableEntity().json(ErrorJson {
+                            message: "Unexpected end of json".to_string(),
+                            fields: None,
+                        })
+                    } else if json_err.is_data() {
+                        HttpResponse::BadRequest().json(ErrorJson {
+                            message: json_err.to_string(),
+                            fields: None,
+                        })
+                    } else {
+                        HttpResponse::UnprocessableEntity().json(ErrorJson {
+                            message: json_err.to_string(),
+                            fields: None,
+                        })
+                    }
+                }
+                _ => HttpResponse::BadRequest().json(details),
+            }
+        }
+        Error::Validate(validation_error) => {
+            tracing::error!("Validation error: {}", validation_error);
+
+            HttpResponse::UnprocessableEntity().json(ErrorJson {
+                message: "Validation error".to_owned(),
+                fields: Some(
+                    validation_error
+                        .field_errors()
+                        .iter()
+                        .map(|(&fields, &errors)| {
+                            (
+                                fields.to_string(),
+                                errors
+                                    .iter()
+                                    .map(|e| e.to_string())
+                                    .collect::<Vec<String>>(),
+                            )
+                        })
+                        .collect::<HashMap<String, Vec<String>>>(),
+                ),
+            })
         }
         _ => HttpResponse::BadRequest().json(details),
     };

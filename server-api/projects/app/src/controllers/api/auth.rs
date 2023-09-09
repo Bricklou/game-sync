@@ -5,7 +5,10 @@ use actix_web::{
 };
 
 use crate::{
-    core::{errors::AppError, types::ValidatedJson},
+    core::{
+        errors::{AppError, AppResult},
+        types::ValidatedJson,
+    },
     data::AppData,
     entities::user::Model as UserModel,
     models::user::UserLoginRequest,
@@ -16,7 +19,7 @@ pub async fn login(
     input: ValidatedJson<UserLoginRequest>,
     data: Data<AppData>,
     session: Session,
-) -> Result<impl Responder, AppError> {
+) -> AppResult<impl Responder> {
     let user = repositories::user::login(&data.db, &input).await?;
 
     session.insert("user_id", user.id)?;

@@ -46,7 +46,7 @@
       {{ $props.label }}
     </label>
 
-    <p v-if="errorMessage" class="absolute text-sm text-red-500 ml-4 mt-1">
+    <p v-if="errorMessage" class="text-sm text-red-500 ml-4 mt-1">
       {{ errorMessage }}
     </p>
   </div>

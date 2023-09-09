@@ -69,5 +69,6 @@ export const useAuthStore = defineStore("auth", () => {
     login,
     logout,
     loadLocalInfos,
+    token,
   };
 });

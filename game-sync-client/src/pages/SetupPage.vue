@@ -66,7 +66,7 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     await appStore.setServerUrl(values.serverUrl ?? null);
 
-    await router.push({ name: "Login" });
+    await router.push("/login");
   } catch (error) {
     if (error instanceof Error) {
       setFieldError("serverUrl", error.message);

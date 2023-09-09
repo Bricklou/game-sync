@@ -17,7 +17,7 @@ impl Default for Pagination {
 
 impl Pagination {
     pub fn get_page(&self) -> u64 {
-        self.page.unwrap_or(1)
+        self.page.unwrap_or(0)
     }
 
     pub fn get_per_page(&self) -> u64 {
@@ -26,10 +26,15 @@ impl Pagination {
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct Paginated<T> {
-    pub data: Vec<T>,
+pub struct PaginationMeta {
     pub current_page: u64,
     pub total_items: u64,
     pub total_pages: u64,
     pub per_page: u64,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct Paginated<T> {
+    pub data: Vec<T>,
+    pub meta: PaginationMeta,
 }
