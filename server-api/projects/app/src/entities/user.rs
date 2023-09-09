@@ -41,6 +41,10 @@ impl ActiveModelBehavior for ActiveModel {
         let mut this = self;
 
         {
+            this.email = Set(this.email.as_ref().to_lowercase());
+        }
+
+        {
             let hashed_password = hashing::hash(this.password.as_ref())
                 .map_err(|_| DbErr::Custom("[before_save] Failed to hash password".to_string()))?;
 

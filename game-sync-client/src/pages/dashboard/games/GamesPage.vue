@@ -37,13 +37,13 @@
       <!-- Games list -->
       <ul
         v-if="!loading && data?.length"
-        class="flex-auto overflow-y-auto h-10 scroll-smooth scroll-m-4"
+        class="flex flex-col flex-auto overflow-y-auto h-10 scroll-smooth scroll-m-4 gap-y-1"
       >
         <li v-for="game in data" :key="game.id">
           <router-link :to="`/dashboard/games/${game.id}`">
             <div
               :class="[
-                'flex flex-row items-center justify-between px-8 py-4 hover:bg-cyan-500 hover:bg-opacity-20 rounded-lg mx-4 my-2',
+                'flex flex-row items-center justify-between px-8 py-2 hover:bg-cyan-500 hover:bg-opacity-20 rounded-lg mx-4',
                 'transition-colors duration-100 ease-in-out',
               ]"
             >
@@ -55,6 +55,43 @@
               </div>
             </div>
           </router-link>
+        </li>
+
+        <!-- Add a paginator if the current page is lower than the total number of pages -->
+        <li
+          v-if="meta && meta.current_page < meta.total_pages"
+          class="flex flex-row justify-between mx-8 items-end flex-1 mb-1"
+        >
+          <GSButton
+            type="button"
+            tabindex="0"
+            bg-color="bg-transparent hover:bg-gray-200"
+            text-color="text-gray-700 hover:text-cyan-600"
+            :class="[
+              'flex flex-row items-center gap-2',
+              { invisible: meta.current_page === 0 },
+            ]"
+            @click="fetchGames(Math.max(meta.current_page - 1, 0))"
+          >
+            <ArrowLeft class="w-6 h-6" />
+            <span> Previous </span>
+          </GSButton>
+          <GSButton
+            type="button"
+            tabindex="0"
+            bg-color="bg-transparent hover:bg-gray-200"
+            text-color="text-gray-700 hover:text-cyan-600"
+            :class="[
+              'flex flex-row items-center gap-2',
+              { invisible: meta.current_page + 1 >= meta.total_pages },
+            ]"
+            @click="
+              fetchGames(Math.min(meta.current_page + 1, meta.total_pages))
+            "
+          >
+            <span>Next</span>
+            <ArrowRight class="w-6 h-6" />
+          </GSButton>
         </li>
       </ul>
 
@@ -113,18 +150,21 @@ import { onBeforeMount, ref, watch } from "vue";
 import { Game } from "@/types/game";
 import { HttpError } from "@/types/http_errors";
 import { debounce } from "@/utils/debounce";
+import { PaginationMeta } from "@/types/pagination";
+import { ArrowLeft } from "lucide-vue-next";
+import { ArrowRight } from "lucide-vue-next";
 
 const router = useRouter();
 
 const loading = ref(true);
 const data = ref<Game[]>([]);
-const meta = ref({} as any);
+const meta = ref<PaginationMeta | null>(null);
 const error = ref<string | null>(null);
 
 const sortAsc = ref(true);
 const searchInput = ref("");
 
-async function fetchGames() {
+async function fetchGames(page: number = 0) {
   let timeout = setTimeout(() => {
     loading.value = true;
   }, 500);
@@ -133,6 +173,9 @@ async function fetchGames() {
     const games = await getGames({
       sortOrder: sortAsc.value ? "asc" : "desc",
       search: searchInput.value,
+      pagination: {
+        page,
+      },
     });
     data.value = games.data;
     meta.value = games.meta;

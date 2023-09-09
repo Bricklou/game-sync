@@ -40,7 +40,7 @@ pub async fn get_user_from_id(db: &DbPool, id: i32) -> AppResult<Option<UserMode
 
 pub async fn get_user_from_email(db: &DbPool, email: &String) -> AppResult<Option<UserModel>> {
     let user = User::find()
-        .filter(user::Column::Email.eq(email))
+        .filter(user::Column::Email.like(email.to_lowercase()))
         .one(db)
         .await
         .map_err(AppError::DatabaseError)?;

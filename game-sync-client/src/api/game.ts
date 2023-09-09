@@ -63,3 +63,22 @@ export async function getGames({
 
   return await response.json();
 }
+
+export async function getGame(id: number): Promise<Game> {
+  const appStore = useAppStore();
+
+  let response: Response;
+
+  try {
+    response = await appStore.fetch("/api/games/" + id);
+  } catch (e) {
+    throw new Error("Failed to get game: " + e);
+  }
+
+  if (!response.ok) {
+    console.error(response);
+    throw new HttpError(response);
+  }
+
+  return await response.json();
+}
