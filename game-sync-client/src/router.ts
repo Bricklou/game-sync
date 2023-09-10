@@ -61,14 +61,32 @@ const routes: RouteRecordRaw[] = [
           },
           {
             path: "/dashboard/games/:id(\\d+)",
-            name: "GameView",
-            component: () => import("./pages/dashboard/games/GameViewPage.vue"),
             props: (route) => {
               return {
                 id: Number.parseInt(route.params.id as string, 10) || undefined,
                 ...route.params,
               };
             },
+            children: [
+              {
+                path: "/dashboard/games/:id(\\d+)",
+                name: "GameView",
+                component: () =>
+                  import("./pages/dashboard/games/GameViewPage.vue"),
+              },
+              {
+                path: "/dashboard/games/:id(\\d+)/edit",
+                name: "EditGame",
+                component: () =>
+                  import("./pages/dashboard/games/EditGamePage.vue"),
+              },
+              {
+                path: "/dashboard/games/:id(\\d+)/versions/new",
+                name: "AddGameVersion",
+                component: () =>
+                  import("./pages/dashboard/games/AddVersionPage.vue"),
+              },
+            ],
           },
         ],
       },

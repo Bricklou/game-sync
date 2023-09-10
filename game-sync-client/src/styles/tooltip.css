@@ -1,0 +1,17 @@
+[data-tip] {
+  @apply relative;
+
+  &::before {
+    @apply transition-all duration-200 left-1/2 transform -translate-x-1/2 right-auto bottom-auto;
+    @apply ease-in-out relative inline-block max-w-xs rounded px-2 py-1;
+    @apply text-sm leading-5 bg-cyan-600 text-white w-max;
+    @apply absolute pointer-events-none z-[1] opacity-0;
+
+    content: attr(data-tip);
+    top: calc(100% + 1px + 0.1875rem);
+  }
+
+  &:hover::before {
+    @apply delay-75 opacity-100;
+  }
+}

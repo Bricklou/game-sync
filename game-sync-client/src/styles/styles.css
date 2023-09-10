@@ -3,6 +3,7 @@
 @import "tailwindcss/utilities";
 @import "tailwindcss/variants";
 @import "./route-animations";
+@import "./tooltip";
 
 html,
 body {
