@@ -9,4 +9,7 @@ export interface Game {
   description?: string;
   created_at: string;
   updated_at: string;
+
+  // TODO: add a game cover
+  cover?: string;
 }
