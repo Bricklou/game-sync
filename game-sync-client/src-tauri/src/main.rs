@@ -23,7 +23,9 @@ fn main() {
         // Setup
         .setup(setup::setup)
         // Invoke handlers
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![
+            commands::helpers::get_image_dominant
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -4,38 +4,41 @@
     class="flex-1 pb-1 flex flex-col relative overflow-y-auto scroll-smooth h-56"
   >
     <!-- Header -->
-    <header class="mb-2 h-48 z-10 sticky -top-32 flex flex-col items-center">
+    <header class="mb-2 h-48 z-10 sticky -top-20 flex flex-col items-center">
       <!-- Game cover -->
       <figure
-        class="w-full h-48 overflow-hidden absolute top-0 left-0 select-none pointer-events-none"
+        class="w-full h-48 overflow-hidden absolute top-0 left-0 select-none pointer-events-none bg-gradient-to-b from-gray-950 to-gray-500"
       >
         <img
-          v-if="game.cover"
-          :src="game.cover"
+          v-if="game.banner?.banner_type === GameBannerType.Image"
+          :src="game.banner?.value"
           :alt="game.name"
-          class="w-full h-full object-cover"
+          class="w-full h-full object-cover opacity-75"
         />
 
         <div
           v-else
-          class="w-full h-full flex flex-col justify-center items-center bg-gray-400"
-        >
-          <span class="text-4xl text-gray-700"> ? </span>
-        </div>
+          class="w-full h-full flex flex-col justify-center items-center"
+          :style="{ backgroundColor: game.banner?.value }"
+        ></div>
       </figure>
 
       <div class="h-16 sticky top-0 w-full">
         <div
-          class="flex flex-col justify-between z-10 items-center px-8 pt-4 h-full"
+          :class="[
+            'flex flex-col justify-between z-10 items-center px-8 pt-4 h-full',
+            colorClass,
+          ]"
         >
           <div
             class="z-10 flex flex-row justify-between items-center w-full sticky top-0"
+            :style="{ backgroundColor: game.banner?.value }"
           >
             <span class="flex flex-row justify-start items-center gap-2">
               <router-link
                 to="/dashboard/games"
                 :class="[
-                  'block p-1 rounded-md hover:bg-gray-200 hover:bg-opacity-40 hover:text-cyan-600 transition-all duration-100 ease-in-out',
+                  'block p-1 rounded-md hover:bg-gray-200 hover:bg-opacity-80 hover:text-cyan-600 transition-all duration-100 ease-in-out',
                   'before:!left-full',
                 ]"
                 aria-label="Back to games"
@@ -43,13 +46,15 @@
               >
                 <ArrowLeft class="w-6 h-6" />
               </router-link>
-              <h1 class="text-2xl font-semibold">{{ game.name }}</h1>
+              <h1 class="text-2xl font-semibold">
+                {{ game.name }}
+              </h1>
             </span>
 
             <span>
               <router-link
                 :to="`/dashboard/games/${route.params.id}/edit`"
-                class="block p-1 rounded-md hover:bg-gray-200 hover:bg-opacity-40 hover:text-cyan-600 transition-all duration-100 ease-in-out text-gray-600"
+                class="block p-1 rounded-md hover:bg-gray-200 hover:bg-opacity-80 hover:text-cyan-600 transition-all duration-100 ease-in-out"
                 aria-label="Edit game"
                 data-tip="Edit game"
               >
@@ -166,18 +171,6 @@
                     {{ g.created_at }}
                   </span>
                 </div>
-
-                <div>
-                  <GSButton
-                    data-tip="Download the version"
-                    aria-label="Download the version"
-                    class="before:!-left-1 before:!right-0 py-2 px-2"
-                    bg-color="bg-transparent hover:bg-white hover:bg-opacity-50"
-                    text-color="text-gray-500 hover:text-cyan-600"
-                  >
-                    <Download class="w-6 h-6" />
-                  </GSButton>
-                </div>
               </div>
             </li>
           </ul>
@@ -209,12 +202,13 @@
 <script setup lang="ts">
 import LoadingSpinner from "@/components/base/LoadingSpinner.vue";
 import { ArrowLeft, Pencil, Play, Plus, Download } from "lucide-vue-next";
-import { Game } from "@/types/game";
+import { Game, GameBanner, GameBannerType } from "@/types/game";
 import { onBeforeMount, ref } from "vue";
 import { useRoute } from "vue-router";
 import { HttpError } from "@/types/http_errors";
 import { getGame } from "@/api/game";
 import GSButton from "@/components/base/GSButton.vue";
+import { Color, getImageDominantColor, getLuminance } from "@/utils/colors";
 
 const route = useRoute();
 
@@ -222,11 +216,16 @@ const game = ref<Game | null>(null);
 const installed = ref<boolean>(false);
 const error = ref<string | null>(null);
 
+const colorClass = ref<string>("text-white");
+
 async function fetchGame() {
   try {
     const gameId = Number.parseInt(route.params.id as string);
     game.value = await getGame(gameId);
-    console.log(game.value);
+
+    if (game.value.banner) {
+      colorClass.value = await getContrastColor(game.value.banner);
+    }
   } catch (e) {
     if (e instanceof HttpError) {
       error.value = e.message;
@@ -234,6 +233,31 @@ async function fetchGame() {
       error.value = "An unknown error occurred";
     }
   }
+}
+
+/**
+ * Get contrast color from a hex color or an image
+ * @param banner_data The banner data with type (image or color) and value (hex color or image url)
+ * @returns The contrast color
+ */
+async function getContrastColor(banner_data: GameBanner): Promise<string> {
+  let color: Color;
+
+  // If the banner is a color, we can get the contrast color
+  if (banner_data.banner_type === GameBannerType.Color) {
+    const hex = banner_data.value;
+    color = Color.fromHex(hex);
+  } else {
+    // If the banner is an image, get the average color of the image
+    color = await getImageDominantColor(banner_data.value);
+  }
+
+  // Counting the perceptive luminance - human eye favors green color...
+  // https://stackoverflow.com/a/3943023/1232793
+  const luminance = getLuminance(color);
+  console.log("luminance", luminance);
+
+  return luminance > 158 ? "text-gray-800" : "text-white";
 }
 
 onBeforeMount(() => {

@@ -3,6 +3,18 @@ export interface GameInput {
   description?: string;
 }
 
+export enum GameBannerType {
+  Color = "color",
+  Image = "image",
+}
+
+export interface GameBanner {
+  id: number;
+  game_id: number;
+  banner_type: GameBannerType;
+  value: string;
+}
+
 export interface Game {
   id: number;
   name: string;
@@ -10,6 +22,5 @@ export interface Game {
   created_at: string;
   updated_at: string;
 
-  // TODO: add a game cover
-  cover?: string;
+  banner?: GameBanner;
 }

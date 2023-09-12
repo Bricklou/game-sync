@@ -3,4 +3,5 @@
 pub mod prelude;
 
 pub mod game;
+pub mod game_banner;
 pub mod user;

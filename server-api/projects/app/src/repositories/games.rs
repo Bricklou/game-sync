@@ -6,9 +6,12 @@ use sea_orm::{
 use crate::core::database::DbPool;
 use crate::core::errors::{AppError, AppResult};
 
-use crate::entities::game;
-use crate::entities::{game::Model as GameModel, prelude::*};
-use crate::models::games::GameCreateInput;
+use crate::entities::{game, game_banner};
+use crate::entities::{
+    game::Model as GameModel, game_banner::Model as GameBannerModel, prelude::*,
+};
+use crate::helpers;
+use crate::models::games::{GameCreateInput, GameGetResponse};
 use crate::models::pagination::{Paginated, Pagination, PaginationMeta};
 use crate::models::search::Search;
 
@@ -59,23 +62,87 @@ pub async fn paginate_games(
     })
 }
 
-pub async fn create_games(db: &DbPool, game: &GameCreateInput) -> AppResult<GameModel> {
+pub async fn create_games(db: &DbPool, game_input: &GameCreateInput) -> AppResult<GameModel> {
     let game = game::ActiveModel {
-        name: Set(game.name.clone()),
-        description: Set(game.description.clone()),
+        name: Set(game_input.name.clone()),
+        description: Set(game_input.description.clone()),
         ..Default::default()
     };
 
     let game = game.insert(db).await.map_err(AppError::DatabaseError)?;
 
+    if let Some(banner_input) = &game_input.banner_type {
+        create_game_banner(
+            db,
+            &game,
+            banner_input.banner_type.clone(),
+            banner_input.value.clone().unwrap_or_default(),
+        )
+        .await?;
+    } else {
+        create_default_game_banner(db, &game).await?;
+    }
+
     Ok(game)
 }
 
-pub async fn get_game(db: &DbPool, id: i32) -> AppResult<Option<GameModel>> {
+pub async fn create_default_game_banner(
+    db: &DbPool,
+    game_obj: &GameModel,
+) -> AppResult<GameBannerModel> {
+    let color = helpers::colors::Color::from_text(game_obj.name.clone());
+
+    create_game_banner(
+        db,
+        game_obj,
+        game_banner::BannerType::Color,
+        color.to_string(),
+    )
+    .await
+}
+
+pub async fn create_game_banner(
+    db: &DbPool,
+    game_obj: &GameModel,
+    banner_type: game_banner::BannerType,
+    value: String,
+) -> AppResult<GameBannerModel> {
+    let banner = game_banner::ActiveModel {
+        game_id: Set(game_obj.id),
+        banner_type: Set(banner_type),
+        value: Set(value),
+        ..Default::default()
+    };
+
+    let banner = banner.insert(db).await.map_err(AppError::DatabaseError)?;
+
+    Ok(banner)
+}
+
+pub async fn get_game(db: &DbPool, id: i32) -> AppResult<Option<GameGetResponse>> {
     let game = Game::find_by_id(id)
+        .find_also_related(GameBanner)
         .one(db)
         .await
-        .map_err(AppError::DatabaseError)?;
+        .map_err(AppError::DatabaseError)?
+        .map_or(None, |(game, banner)| {
+            // Our game model
+            Some(GameGetResponse {
+                id: game.id,
+                name: game.name,
+                description: game.description,
+
+                // Our game banner model
+                banner: banner.map_or(None, |banner| {
+                    Some(GameBannerModel {
+                        id: banner.id,
+                        banner_type: banner.banner_type,
+                        value: banner.value,
+                        game_id: banner.game_id,
+                    })
+                }),
+            })
+        });
 
     Ok(game)
 }
