@@ -179,6 +179,19 @@
     </main>
   </article>
 
+  <!-- Error state -->
+  <div
+    v-else-if="error"
+    class="flex flex-1 flex-col items-center justify-center"
+  >
+    <div class="mb-4 glitched">
+      <ServerCrash class="text-gray-700" />
+      <ServerCrash class="text-gray-700" />
+      <ServerCrash class="text-gray-700" />
+    </div>
+    <span class="">{{ error }}</span>
+  </div>
+
   <div v-else class="flex-1 flex flex-col py-8 px-4">
     <header>
       <router-link
@@ -201,7 +214,14 @@
 
 <script setup lang="ts">
 import LoadingSpinner from "@/components/base/LoadingSpinner.vue";
-import { ArrowLeft, Pencil, Play, Plus, Download } from "lucide-vue-next";
+import {
+  ArrowLeft,
+  Pencil,
+  Play,
+  Plus,
+  Download,
+  ServerCrash,
+} from "lucide-vue-next";
 import { Game, GameBanner, GameBannerType } from "@/types/game";
 import { onBeforeMount, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -255,8 +275,6 @@ async function getContrastColor(banner_data: GameBanner): Promise<string> {
   // Counting the perceptive luminance - human eye favors green color...
   // https://stackoverflow.com/a/3943023/1232793
   const luminance = getLuminance(color);
-  console.log("luminance", luminance);
-
   return luminance > 158 ? "text-gray-800" : "text-white";
 }
 

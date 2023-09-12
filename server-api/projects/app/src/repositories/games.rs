@@ -69,7 +69,7 @@ pub async fn create_games(db: &DbPool, game_input: &GameCreateInput) -> AppResul
         ..Default::default()
     };
 
-    let game = game.insert(db).await.map_err(AppError::DatabaseError)?;
+    let game = game.insert(db).await?;
 
     if let Some(banner_input) = &game_input.banner_type {
         create_game_banner(
@@ -79,26 +79,9 @@ pub async fn create_games(db: &DbPool, game_input: &GameCreateInput) -> AppResul
             banner_input.value.clone().unwrap_or_default(),
         )
         .await?;
-    } else {
-        create_default_game_banner(db, &game).await?;
     }
 
     Ok(game)
-}
-
-pub async fn create_default_game_banner(
-    db: &DbPool,
-    game_obj: &GameModel,
-) -> AppResult<GameBannerModel> {
-    let color = helpers::colors::Color::from_text(game_obj.name.clone());
-
-    create_game_banner(
-        db,
-        game_obj,
-        game_banner::BannerType::Color,
-        color.to_string(),
-    )
-    .await
 }
 
 pub async fn create_game_banner(
@@ -114,17 +97,50 @@ pub async fn create_game_banner(
         ..Default::default()
     };
 
-    let banner = banner.insert(db).await.map_err(AppError::DatabaseError)?;
+    let banner = banner.insert(db).await?;
 
     Ok(banner)
+}
+
+pub async fn update_games(
+    db: &DbPool,
+    id: i32,
+    game_input: &GameCreateInput,
+) -> AppResult<GameModel> {
+    let (game, banner) = Game::find_by_id(id)
+        .find_also_related(GameBanner)
+        .one(db)
+        .await?
+        .ok_or(AppError::NotFoundError)?;
+
+    let mut game: game::ActiveModel = game.into();
+
+    game.name = Set(game_input.name.clone());
+    game.description = Set(game_input.description.clone());
+
+    if let Some(banner) = banner {
+        let mut banner: game_banner::ActiveModel = banner.into();
+
+        if let Some(banner_input) = &game_input.banner_type {
+            banner.banner_type = Set(banner_input.banner_type.clone());
+            banner.value = Set(banner_input.value.clone().unwrap_or_default());
+        } else {
+            banner.banner_type = Set(game_banner::BannerType::Color);
+            banner.value =
+                Set(helpers::colors::Color::from_text(game_input.name.clone()).to_string());
+        }
+    }
+
+    let game = game.update(db).await?;
+
+    Ok(game)
 }
 
 pub async fn get_game(db: &DbPool, id: i32) -> AppResult<Option<GameGetResponse>> {
     let game = Game::find_by_id(id)
         .find_also_related(GameBanner)
         .one(db)
-        .await
-        .map_err(AppError::DatabaseError)?
+        .await?
         .map_or(None, |(game, banner)| {
             // Our game model
             Some(GameGetResponse {

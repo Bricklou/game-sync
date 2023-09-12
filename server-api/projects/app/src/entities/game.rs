@@ -1,3 +1,6 @@
+use crate::helpers;
+
+use super::game_banner::{self, Entity as GameBanner};
 use sea_orm::{entity::prelude::*, Set};
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -51,5 +54,37 @@ impl ActiveModelBehavior for ActiveModel {
         }
 
         Ok(this)
+    }
+
+    /// Will be triggered after insert / update
+    async fn after_save<C>(game: Model, db: &C, _insert: bool) -> Result<Model, DbErr>
+    where
+        C: ConnectionTrait,
+    {
+        {
+            // Check if the game has a banner
+            let banner = GameBanner::find()
+                .filter(game_banner::Column::GameId.eq(game.id))
+                .one(db)
+                .await?;
+
+            if banner.is_none() {
+                // If the game doesn't have a banner, create one
+                let color = helpers::colors::Color::from_text(game.name.clone());
+
+                let banner = game_banner::ActiveModel {
+                    game_id: Set(game.id),
+                    banner_type: Set(game_banner::BannerType::Color),
+                    value: Set(color.to_string()),
+                    ..Default::default()
+                };
+
+                banner.insert(db).await?;
+
+                tracing::info!("Created banner for game {}", game.name);
+            }
+        }
+
+        Ok(game)
     }
 }

@@ -49,3 +49,14 @@ pub async fn get_game(
 
     Err(AppError::NotFoundError)
 }
+
+#[tracing::instrument(name = "PUT /api/games/{id}", skip(data))]
+pub async fn update_game(
+    path: ValidatedPath<GameViewPath>,
+    input: ValidatedJson<GameCreateInput>,
+    data: Data<AppData>,
+) -> AppResult<impl Responder> {
+    let game = repositories::games::update_games(&data.db, path.into_inner().id, &input).await?;
+
+    Ok(HttpResponse::Ok().json(game))
+}

@@ -31,6 +31,7 @@ pub fn register_route(cfg: &mut ServiceConfig, app_data: &AppData) {
         .service(
             web::resource("games/{id}")
                 .route(web::get().to(api_ctrl::games::get_game))
+                .route(web::put().to(api_ctrl::games::update_game))
                 .wrap(Auth),
         )
         .wrap(session_middleware);

@@ -57,7 +57,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: "/dashboard/games/new",
             name: "AddGame",
-            component: () => import("./pages/dashboard/games/AddGamePage.vue"),
+            component: () => import("./pages/dashboard/games/GameFormPage.vue"),
           },
           {
             path: "/dashboard/games/:id(\\d+)",
@@ -78,7 +78,7 @@ const routes: RouteRecordRaw[] = [
                 path: "/dashboard/games/:id(\\d+)/edit",
                 name: "EditGame",
                 component: () =>
-                  import("./pages/dashboard/games/EditGamePage.vue"),
+                  import("./pages/dashboard/games/GameFormPage.vue"),
               },
               {
                 path: "/dashboard/games/:id(\\d+)/versions/new",

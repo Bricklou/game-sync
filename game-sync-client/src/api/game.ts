@@ -29,6 +29,32 @@ export async function createGame(game: GameInput): Promise<void> {
   }
 }
 
+export async function updateGame(id: string, game: GameInput): Promise<void> {
+  const appStore = useAppStore();
+
+  let response: Response;
+  try {
+    response = await appStore.fetch("/api/games/" + id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(game),
+    });
+  } catch (e) {
+    throw new Error("Failed to update game: " + e);
+  }
+
+  if (response.status == 422) {
+    throw await HttpValidationError.fromResponse(response);
+  }
+
+  if (!response.ok) {
+    console.error(response);
+    throw new HttpError(response);
+  }
+}
+
 export async function getGames({
   pagination = undefined,
   sortOrder = "asc",
