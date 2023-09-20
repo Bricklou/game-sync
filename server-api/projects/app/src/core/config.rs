@@ -19,6 +19,17 @@ pub struct DatabaseConfig {
 }
 
 #[derive(serde::Deserialize, Clone)]
+pub struct StorageConfig {
+    pub name: String,
+    pub region: String,
+    pub endpoint: String,
+    pub access_key: String,
+    pub secret_key: String,
+    #[serde(default = "default_use_ssl")]
+    pub use_ssl: bool,
+}
+
+#[derive(serde::Deserialize, Clone)]
 pub struct RedisConfig {
     pub url: String,
 }
@@ -28,6 +39,7 @@ pub struct AppConfig {
     pub server: ServerConfig,
     pub database: DatabaseConfig,
     pub redis: RedisConfig,
+    pub storage: StorageConfig,
 
     #[serde(default = "default_enable_registration")]
     pub enable_registration: bool,
@@ -55,4 +67,8 @@ fn default_port() -> u16 {
 
 fn default_enable_registration() -> bool {
     false
+}
+
+fn default_use_ssl() -> bool {
+    true
 }

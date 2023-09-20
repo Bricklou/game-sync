@@ -10,8 +10,13 @@ actix-rt = "2"
 actix-multi-session = { path = "../actix-multi-session" }
 actix-web-validator = "5"
 actix-web-lab = { version = "0", features = ["spa"] }
+actix-multipart = "0"
 actix-utils = "3"
 actix-web-grants = "3"
+
+# Async
+futures = "0"
+tokio = { version = "1", features = ["full"] }
 
 # Data formating / manipulation
 serde = { workspace = true }
@@ -22,10 +27,11 @@ argon2 = { version = "0", "features" = ["std"] }
 rand = { version = "0", features = ["std"] }
 hex = "0"
 uuid = { version = "1", features = ["v4"] }
-minio-rsc = { version = "0", features = ["fs-tokio"] }
 
 # Database
 sea-orm = { workspace = true }
+#rust-s3-async = "0"
+rust-s3-async = { path = "../../../rust-s3-async/s3" }
 
 # Logging
 tracing = { version = "0", features = [

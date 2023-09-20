@@ -7,3 +7,11 @@ url = "postgres://postgres:postgres@localhost:5432/postgres"
 
 [redis]
 url = "redis://localhost:6379"
+
+[storage]
+name = "game-sync"
+region = "eu-west-1"
+endpoint = "http://localhost:9000"
+access_key = "iJYHuwoXhZcQsQM9c5g0"
+secret_key = "rsBz4hlr760PSEFZBGtc8QtKmrBPCnfFgIKoOpG9"
+use_ssl = false

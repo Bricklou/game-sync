@@ -2,8 +2,10 @@ use std::collections::HashMap;
 
 use actix_web::{
     error::{JsonPayloadError, ResponseError},
+    http::StatusCode,
     HttpRequest, HttpResponse,
 };
+use s3::error::S3Error;
 use serde::Serialize;
 
 pub type AppResult<T> = Result<T, AppError>;
@@ -15,6 +17,9 @@ pub enum AppError {
 
     #[error("Not Found Error")]
     NotFoundError,
+
+    #[error("Bad Request: {0}")]
+    BadRequest(String),
 
     #[error("Failed to parse IP Address: {0}")]
     IpAddrError(#[from] std::net::AddrParseError),
@@ -49,6 +54,15 @@ pub enum AppError {
     #[error("Already Exists: {0}")]
     AlreadyExists(String),
 
+    #[error("S3 Error: {0}")]
+    S3Error(#[from] s3::error::S3Error),
+
+    #[error("S3 credentials error: {0}")]
+    S3CredentialsError(#[from] s3::creds::error::CredentialsError),
+
+    #[error("Multipart Errors: {0:?}")]
+    MultipartError(#[from] actix_multipart::MultipartError),
+
     #[error("Unauthorized")]
     Unauthorized,
 
@@ -64,18 +78,36 @@ pub struct AppErrorResponse {
     pub error: String,
 }
 
+#[derive(Serialize)]
+pub struct AppS3ErrorResponse {
+    pub error: String,
+    pub message: String,
+}
+
 impl ResponseError for AppError {
     fn status_code(&self) -> actix_web::http::StatusCode {
         match self {
             AppError::NotFoundError => actix_web::http::StatusCode::NOT_FOUND,
             AppError::Unauthorized => actix_web::http::StatusCode::UNAUTHORIZED,
             AppError::AlreadyExists(_) => actix_web::http::StatusCode::CONFLICT,
-            AppError::NotFoundError => actix_web::http::StatusCode::NOT_FOUND,
+            AppError::BadRequest(_) => actix_web::http::StatusCode::BAD_REQUEST,
+            AppError::MultipartError(_) => actix_web::http::StatusCode::BAD_REQUEST,
             _ => actix_web::http::StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
     fn error_response(&self) -> actix_web::HttpResponse<actix_web::body::BoxBody> {
+        if let AppError::S3Error(error) = self {
+            if let S3Error::HttpFailWithBody(s3_status, message) = error {
+                let s3_status =
+                    StatusCode::from_u16(*s3_status).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+
+                return HttpResponse::build(s3_status).json(AppS3ErrorResponse {
+                    error: "S3 Error".to_string(),
+                    message: message.to_string(),
+                });
+            }
+        }
         HttpResponse::build(self.status_code()).json(AppErrorResponse {
             error: self.to_string(),
         })
@@ -85,6 +117,7 @@ impl ResponseError for AppError {
 #[derive(Serialize)]
 struct ErrorJson {
     message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     fields: Option<HashMap<String, Vec<String>>>,
 }
 

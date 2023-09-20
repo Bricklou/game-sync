@@ -7,6 +7,7 @@ use crate::core::{
     config::{AppConfig, SecretKey},
     database::DbPool,
     errors::AppResult,
+    s3::S3Client,
 };
 
 #[derive(Clone)]
@@ -16,6 +17,7 @@ pub struct AppData {
     pub session_store: RedisSessionStore,
     pub config: AppConfig,
     pub secret_key: SecretKey,
+    pub s3: S3Client,
 }
 
 impl AppData {

@@ -2,7 +2,7 @@ use actix_multi_session::storage::RedisSessionStore;
 use tera::Tera;
 
 use crate::{
-    core::{config::AppConfig, database, errors::AppError},
+    core::{config::AppConfig, database, errors::AppError, s3},
     data::AppData,
 };
 
@@ -16,6 +16,10 @@ pub async fn init() -> Result<AppData, AppError> {
     // Initialize database
     let pool = database::init_pool(&config.database.url).await?;
     database::seed_database(&pool).await?;
+
+    // Initialize S3 client
+    let mut s3_client = s3::init_client(&config.storage).await?;
+    s3_client.prepare_bucket().await?;
 
     // Initialize session middleware
     let redis_store = RedisSessionStore::new(&config.redis.url)
@@ -32,6 +36,7 @@ pub async fn init() -> Result<AppData, AppError> {
         session_store: redis_store,
         config,
         secret_key,
+        s3: s3_client,
     };
 
     Ok(app_data)

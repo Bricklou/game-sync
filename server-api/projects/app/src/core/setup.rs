@@ -16,6 +16,10 @@ pub fn server_setup(cfg: &mut ServiceConfig, app_data: AppData) {
         .error_handler(errors::validated_json_error_handler);
     cfg.app_data(validated_json_config);
 
+    let validated_query_config = actix_web_validator::QueryConfig::default()
+        .error_handler(errors::validated_json_error_handler);
+    cfg.app_data(validated_query_config);
+
     // Register routes
     cfg.configure(|cfg| routes::setup_routes(cfg, &app_data));
 }
