@@ -3244,6 +3244,7 @@ dependencies = [
 [[package]]
 name = "rust-s3-async"
 version = "0.35.0"
+source = "git+https://github.com/Bricklou/rust-s3-async.git#f7aa7abc5a662c3165cd422554723eb426794641"
 dependencies = [
  "async-trait",
  "aws-creds",

@@ -30,8 +30,7 @@ uuid = { version = "1", features = ["v4"] }
 
 # Database
 sea-orm = { workspace = true }
-#rust-s3-async = "0"
-rust-s3-async = { path = "../../../rust-s3-async/s3" }
+rust-s3-async = { git = "https://github.com/Bricklou/rust-s3-async.git" }
 
 # Logging
 tracing = { version = "0", features = [
