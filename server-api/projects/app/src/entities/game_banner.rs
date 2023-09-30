@@ -1,5 +1,7 @@
-use sea_orm::entity::prelude::*;
+use sea_orm::{entity::prelude::*, Set};
 use serde::{Deserialize, Serialize};
+
+use crate::helpers::colors;
 
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "banner_type")]
@@ -44,6 +46,18 @@ impl ActiveModelBehavior for ActiveModel {
     fn new() -> Self {
         Self {
             ..ActiveModelTrait::default()
+        }
+    }
+}
+
+impl ActiveModel {
+    /// Default from game
+    pub fn from_game(game: &super::game::Model) -> Self {
+        Self {
+            game_id: Set(game.id.clone()),
+            banner_type: Set(BannerType::Color),
+            value: Set(colors::Color::from_text(game.name.clone()).to_string()),
+            ..Self::new()
         }
     }
 }

@@ -34,6 +34,17 @@ pub fn register_route(cfg: &mut ServiceConfig, app_data: &AppData) {
                 .route(web::put().to(api_ctrl::games::update_game))
                 .wrap(Auth),
         )
+        .service(
+            web::resource("games/id/banner")
+                .route(web::post().to(api_ctrl::games::upload_game_banner))
+                .route(web::delete().to(api_ctrl::games::delete_game_banner))
+                .wrap(Auth),
+        )
+        .service(
+            web::resource("game/{id}/version")
+                .route(web::post().to(api_ctrl::versions::upload_file))
+                .wrap(Auth),
+        )
         .wrap(session_middleware);
 
     cfg.service(scope);

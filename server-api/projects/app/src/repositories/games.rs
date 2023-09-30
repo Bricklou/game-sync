@@ -1,17 +1,19 @@
+use actix_web::Either;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
-    Set,
+    ActiveModelTrait, ColumnTrait, Condition, EntityTrait, ModelTrait, PaginatorTrait, QueryFilter,
+    QueryOrder, Set,
 };
 
 use crate::core::database::DbPool;
 use crate::core::errors::{AppError, AppResult};
 
+use crate::core::s3::S3Client;
 use crate::entities::{game, game_banner};
 use crate::entities::{
     game::Model as GameModel, game_banner::Model as GameBannerModel, prelude::*,
 };
 use crate::helpers;
-use crate::models::games::{GameCreateInput, GameGetResponse};
+use crate::models::games::{GameBannerUpload, GameCreateInput, GameGetResponse};
 use crate::models::pagination::{Paginated, Pagination, PaginationMeta};
 use crate::models::search::Search;
 
@@ -161,4 +163,76 @@ pub async fn get_game(db: &DbPool, id: i32) -> AppResult<Option<GameGetResponse>
         });
 
     Ok(game)
+}
+
+pub async fn update_game_banner(
+    db: &DbPool,
+    s3: &S3Client,
+    id: i32,
+    banner_form: &GameBannerUpload,
+) -> AppResult<()> {
+    let (game, banner) = Game::find_by_id(id)
+        .find_also_related(GameBanner)
+        .one(db)
+        .await?
+        .ok_or(AppError::NotFoundError)?;
+
+    let mut is_updating = true;
+    // If there is no banner for this game, an empty value
+    let mut banner = if let Some(banner) = banner {
+        banner.into()
+    } else {
+        is_updating = false;
+        game_banner::ActiveModel::from_game(&game)
+    };
+
+    match banner_form {
+        Either::Left(image_form) => {
+            let ext = image_form.image.content_type.clone();
+
+            let Some(ext) = ext else {
+                return Err(AppError::BadRequest(
+                    "Image content type is required".to_string(),
+                ));
+            };
+
+            let filename = format!("banner.{}", ext);
+            let key_prefix = format!("games/{}/", id);
+
+            let file_path = image_form.image.file.path();
+            let image_url = s3.upload_file(filename, file_path, &key_prefix).await?;
+
+            banner.value = Set(image_url);
+        }
+        Either::Right(color_form) => {
+            banner.value = Set(color_form.color.clone());
+        }
+    }
+
+    if is_updating {
+        banner.update(db).await?;
+    } else {
+        banner.insert(db).await?;
+    }
+
+    Ok(())
+}
+
+// Deleting a game banner means resetting the banner value to the default color
+pub async fn delete_game_banner(db: &DbPool, id: i32) -> AppResult<()> {
+    let (game, banner) = Game::find_by_id(id)
+        .find_also_related(GameBanner)
+        .one(db)
+        .await?
+        .ok_or(AppError::NotFoundError)?;
+
+    if let Some(banner) = banner {
+        let mut banner: game_banner::ActiveModel = banner.into();
+
+        banner.value = Set(helpers::colors::Color::from_text(game.name).to_string());
+
+        banner.update(db).await?;
+    }
+
+    Ok(())
 }

@@ -1,4 +1,4 @@
-use std::{borrow::Cow, collections::HashMap};
+use std::{borrow::Cow, collections::HashMap, path::Path};
 
 use s3::{
     creds::{Credentials, Rfc3339OffsetDateTime},
@@ -7,6 +7,7 @@ use s3::{
 };
 use serde::Serialize;
 use time::{Duration, OffsetDateTime};
+use tokio::{fs, io::AsyncReadExt};
 
 use super::{config::StorageConfig, errors::AppResult};
 
@@ -138,5 +139,37 @@ impl S3Client {
                 fields: None,
             })
         }
+    }
+
+    /// Upload file to S3 (only single small upload only)
+    /// This will return the URL of the uploaded file
+    /// WARNING: This is not recommended for large files !!! Be sure to check the file size before uploading
+    /// or use the multipart upload method instead
+    #[tracing::instrument("upload file", skip(self), fields(file_name = %file_name.to_string(), file_path = %file_path.as_ref().display()))]
+    pub async fn upload_file(
+        &self,
+        file_name: impl ToString,
+        file_path: impl AsRef<Path>,
+        key_prefix: &str,
+    ) -> AppResult<String> {
+        let filename = uuid::Uuid::new_v4().to_string();
+        let path = format!("{key_prefix}{filename}");
+
+        let mut file = fs::File::open(file_path).await?;
+
+        self.bucket.put_object_stream(&mut file, &path).await?;
+
+        Ok(path)
+    }
+
+    pub async fn delete_file(&self, key: &str) -> AppResult<()> {
+        self.bucket.delete_object(key).await?;
+
+        Ok(())
+    }
+
+    pub async fn fetch_file(&self, key: &str) -> AppResult<Vec<u8>> {
+        let file = self.bucket.get_object(key).await?;
+        Ok(file.bytes().to_vec())
     }
 }

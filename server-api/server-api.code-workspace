@@ -21,6 +21,9 @@
     },
     {
       "path": "../game-sync-client"
+    },
+    {
+      "path": "../rust-s3-async"
     }
   ],
   "settings": {

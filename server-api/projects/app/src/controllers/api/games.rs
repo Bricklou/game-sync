@@ -1,3 +1,4 @@
+use actix_multipart::{form::MultipartForm, Multipart};
 use actix_web::{web::Data, HttpResponse, Responder};
 
 use crate::{
@@ -7,7 +8,7 @@ use crate::{
     },
     data::AppData,
     models::{
-        games::{GameCreateInput, GameViewPath},
+        games::{GameBannerUpload, GameCreateInput, GameViewPath},
         pagination::Pagination,
         search::Search,
     },
@@ -59,4 +60,28 @@ pub async fn update_game(
     let game = repositories::games::update_games(&data.db, path.into_inner().id, &input).await?;
 
     Ok(HttpResponse::Ok().json(game))
+}
+
+// Upload game banner
+#[tracing::instrument(name = "POST /api/games/{id}/banner", skip(data, form))]
+pub async fn upload_game_banner(
+    path: ValidatedPath<GameViewPath>,
+    data: Data<AppData>,
+    form: GameBannerUpload,
+) -> AppResult<impl Responder> {
+    repositories::games::update_game_banner(&data.db, &data.s3, path.into_inner().id, &form)
+        .await?;
+
+    Ok(HttpResponse::NoContent().finish())
+}
+
+// Delete game banner
+#[tracing::instrument(name = "DELETE /api/games/{id}/banner", skip(data))]
+pub async fn delete_game_banner(
+    path: ValidatedPath<GameViewPath>,
+    data: Data<AppData>,
+) -> AppResult<impl Responder> {
+    repositories::games::delete_game_banner(&data.db, path.into_inner().id).await?;
+
+    Ok(HttpResponse::NoContent().finish())
 }
